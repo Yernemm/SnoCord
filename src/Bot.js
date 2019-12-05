@@ -16,7 +16,7 @@ class Bot extends EventEmitter {
         this.config = mergeDefault(options.config, Bot.defaultConfigOptions);
         this.client = new Discord.Client(options.client);
 
-        this.commands = new Map();
+        this.commands = new Set();
         this.invokers = new Set();
     }
 
@@ -40,12 +40,12 @@ class Bot extends EventEmitter {
 
         if (!this.config.token) throw new Error('No token provided');
 
-        if (preInit) await preInit(this);
+        if (preInit) await preInit.call(this);
 
         await this.client.login(this.config.token);
 
         this.client.once('ready', async () => {
-            if (postInit) await postInit(this);
+            if (postInit) await postInit.call(this);
 
             for (let event of events) {
                 if (event === 'message') continue;
