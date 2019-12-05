@@ -1,6 +1,6 @@
 {
   "name": "snocord",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A Discord.js framework, used by SnoBot.",
   "main": "index.js",
   "scripts": {
@@ -23,5 +23,8 @@
   "homepage": "https://github.com/Yernemm/SnoCord#readme",
   "dependencies": {
     "discord.js": "^11.5.1"
+  },
+  "devDependencies": {
+    "jsdoc-to-markdown": "^5.0.3"
   }
 }

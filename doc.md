@@ -1,10 +1,3 @@
-# SnoCord
- A Discord.js framework used by SnoBot.
-
-not actually finished
-
-Usage:
-
 <a name="Bot"></a>
 
 ## Bot
@@ -45,14 +38,7 @@ Intializes the Bot instance.
 
 **Example**  
 ```js
-new Bot(options).init({
-    async preInit() {
-        // Do stuff before connecting to the API
-    },
-    async postInit() {
-        // Do stuff after connecting to the API
-    }
-});
+new Bot(options).init({    async preInit() {        // Do stuff before connecting to the API    },    async postInit() {        // Do stuff after connecting to the API    }});
 ```
 <a name="Bot+parseCommand"></a>
 
@@ -77,4 +63,3 @@ Default options to fall back on if the config object exists but doesn't have a g
 Prefixing the message with a ping to the bot will work the same as using the bot's prefix.
 
 **Kind**: static property of [<code>defaultConfigOptions</code>](#Bot.defaultConfigOptions)  
-
