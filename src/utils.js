@@ -33,7 +33,7 @@ function parseCommand(bot, message, prefixOverride) {
     const command = args.shift().toLowerCase();
     const argsText = content.slice(prefix.length + command.length).trim();
 
-    return { message, command, args, argsText };
+    return { bot, message, command, args, argsText };
 }
 
 module.exports = {
