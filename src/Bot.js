@@ -76,8 +76,8 @@ class Bot extends EventEmitter {
      * @param {Discord.Message} message The message to try parsing
      * @returns {Object|null}
      */
-    parseCommand(message) {
-        return parseCommand(this, message);
+    parseCommand(message, prefix) {
+        return parseCommand(this, message, prefix);
     }
 }
 
