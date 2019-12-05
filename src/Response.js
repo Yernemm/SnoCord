@@ -42,6 +42,15 @@ class Response {
         }
         funct(respond)
     }
+
+    /**
+     * Checks whether the trigger pattern matches the message.
+     * @param {string} msg - The message to check.
+     */
+    isTriggered(msg)
+    {
+        return this.trigger.test(msg);
+    }
 }
 
 module.exports = Response;
