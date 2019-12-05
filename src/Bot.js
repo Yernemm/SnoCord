@@ -1,7 +1,7 @@
 'use strict';
 const Discord = require('discord.js');
 const EventEmitter = require('events');
-const { mergeDefault } = require('./utils.js');
+const { mergeDefault, parseCommand } = require('./utils.js');
 
 // A set containing all of Discord.js' events except `message`
 const events = Object.values(Discord.Constants.Events);
@@ -77,26 +77,7 @@ class Bot extends EventEmitter {
      * @returns {Object|null}
      */
     parseCommand(message) {
-        if (message.author.bot) return null;
-
-        const content = message.content.trim();
-        
-        // If the message starts with a prefix
-        const prefixed = content.startsWith(this.config.prefix);
-        const mentioned = this.config.mentionAsPrefix ? this.mention.test(content) : false;
-
-        if (!prefixed && !mentioned) return null;
-
-        const prefix = prefixed ? this.config.prefix : content.match(this.mention)[0];
-
-        // Dissallow whitespace between the prefix and command name
-        if (/^\s+/.test(content.slice(prefix.length))) return;
-
-        let args = content.slice(prefix.length).trim().split(/\s+/g);
-        const command = args.shift().toLowerCase();
-        const argsText = content.slice(prefix.length + command.length).trim();
-
-        return { message, command, args, argsText };
+        return parseCommand(this, message);
     }
 }
 
