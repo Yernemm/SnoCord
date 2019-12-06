@@ -5,7 +5,8 @@ const Response = require('./Response.js');
  */
 class Command extends Response {
 
-    constructor(prefixes, commandWord, aliases, metadata, funct) {
+    constructor(prefixes, commandWord, aliases, metadata, funct) 
+    {
 
         //regex builder
 
@@ -33,8 +34,25 @@ class Command extends Response {
         
         this.metadata = metadata;
         this.metadata.aliases = aliases;
+        this.metadata.commandWord = commandWord;
+    }
+
+    /**
+     * Run the response code to a message.
+     * @param {Discord#Message} message - Message object to respond to.
+     */
+    run(){
+        function respond(response, messageOptions = {})
+        {
+            this._respond(message, response, messageOptions);
+        }
+        this.funct(message, respond)
     }
 }
         
+Command.defaultMetadata = {
+    description: "A sample command.",
+    usage: "params"
+}
 
 module.exports = Command;

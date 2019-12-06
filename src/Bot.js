@@ -2,6 +2,8 @@
 const Discord = require('discord.js');
 const EventEmitter = require('events');
 const { mergeDefault, parseCommand } = require('./utils.js');
+const Response = require("./Response.js");
+const Command = require("./Command.js");
 
 // A set containing all of Discord.js' events except `message`
 const events = Object.values(Discord.Constants.Events);
@@ -92,6 +94,36 @@ class Bot extends EventEmitter {
         }
         return matching;
     }
+
+    /**
+     * Adds Response object to the bot's set of responses.
+     * @param {RegExp|Function(Discord#Message)} trigger - The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean.
+     * @param {Function(Discord#Message, respond)} funct - Code to run when triggered. Will pass two parameters: The full discord message object to respond to, respond function which repsonds to the message.
+     */
+    addResponse(trigger, funct){
+        this.responses.add(new Response(trigger, funct));
+    }
+
+    /**
+     * 
+     * @param {string} commandWord - The word which will execute the command.
+     * @param {Array<string>} aliases - Array of all command aliases.
+     * @param {object} info - Info metadata object for command.
+     * @param {Function(data, respond)} funct - Code to run when triggered. Will pass two parameters: object containing parsed command data and message object, respond function which repsonds to the message.
+     */
+    addCommand(commandWord, aliases, info, funct){
+        this.responses.add(
+            new Command([`<@${this.client.user.id}> `,`<@!${this.client.user.id}> `, this.config.prefix],
+            commandWord,aliases, info, funct))
+    }
+
+    /**
+     * Add a custom response object to the list. (Not recommended for standard response types)
+     * @param {Response} response - Object of Response or class which extends response.
+     */
+    addCustomResponse(response){
+        this.responses.add(response);
+    }
 }
 
 Bot.defaultOptions = {
@@ -102,7 +134,8 @@ Bot.defaultOptions = {
 /** Default options to fall back on if the config object exists but doesn't have a given option. */
 Bot.defaultConfigOptions = {
     /** Prefixing the message with a ping to the bot will work the same as using the bot's prefix. */
-    mentionAsPrefix: true
+    mentionAsPrefix: true,
+    prefix: "!"
 };
 
 Bot.defaultInitCallbacks = {
