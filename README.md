@@ -3,7 +3,20 @@
 
 not actually finished
 
-Usage:
+# Usage Docs:
+
+## Classes
+
+<dl>
+<dt><a href="#Bot">Bot</a></dt>
+<dd></dd>
+<dt><a href="#Command">Command</a></dt>
+<dd><p>Command class only to be instantiated by methods inside Bot. Do not manually instantiate.</p>
+</dd>
+<dt><a href="#Response">Response</a></dt>
+<dd><p>Response class only to be instantiated by methods inside Bot. Do not manually instantiate.</p>
+</dd>
+</dl>
 
 <a name="Bot"></a>
 
@@ -15,7 +28,7 @@ Usage:
     * _instance_
         * [.mention](#Bot+mention)
         * [.init(token, [callback])](#Bot+init) ⇒ <code>Promise.&lt;void&gt;</code>
-        * [.parseCommand(message)](#Bot+parseCommand) ⇒ <code>Object</code> \| <code>null</code>
+        * [.tryResponses(message)](#Bot+tryResponses)
     * _static_
         * [.defaultConfigOptions](#Bot.defaultConfigOptions)
             * [.mentionAsPrefix](#Bot.defaultConfigOptions.mentionAsPrefix)
@@ -54,16 +67,16 @@ new Bot(options).init({
     }
 });
 ```
-<a name="Bot+parseCommand"></a>
+<a name="Bot+tryResponses"></a>
 
-### bot.parseCommand(message) ⇒ <code>Object</code> \| <code>null</code>
-Parse a command into an object containing info about the command.
+### bot.tryResponses(message)
+Loops through each response, attempting to find one that will trigger on the given message.
 
 **Kind**: instance method of [<code>Bot</code>](#Bot)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| message | <code>Discord.Message</code> | The message to try parsing |
+| message | <code>Message</code> | The message |
 
 <a name="Bot.defaultConfigOptions"></a>
 
@@ -77,4 +90,66 @@ Default options to fall back on if the config object exists but doesn't have a g
 Prefixing the message with a ping to the bot will work the same as using the bot's prefix.
 
 **Kind**: static property of [<code>defaultConfigOptions</code>](#Bot.defaultConfigOptions)  
+<a name="Command"></a>
+
+## Command
+Command class only to be instantiated by methods inside Bot. Do not manually instantiate.
+
+**Kind**: global class  
+<a name="Response"></a>
+
+## Response
+Response class only to be instantiated by methods inside Bot. Do not manually instantiate.
+
+**Kind**: global class  
+
+* [Response](#Response)
+    * [new Response(trigger, funct)](#new_Response_new)
+    * [._respond(message, response, messageOptions)](#Response+_respond)
+    * [.run(message)](#Response+run)
+    * [.isTriggered(message)](#Response+isTriggered)
+
+<a name="new_Response_new"></a>
+
+### new Response(trigger, funct)
+Creates Response object.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| trigger | <code>RegExp</code> \| <code>function</code> | The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean. |
+| funct | <code>function</code> | Code to run when triggered. Will pass response object. |
+
+<a name="Response+_respond"></a>
+
+### response.\_respond(message, response, messageOptions)
+**Kind**: instance method of [<code>Response</code>](#Response)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>Discord#Message</code> | Message object to respond to. |
+| response | <code>string</code> | String text to send in response. |
+| messageOptions | <code>Discord#MessageOptions</code> | Options provided when sending or editing a message. |
+
+<a name="Response+run"></a>
+
+### response.run(message)
+Run the response code to a message.
+
+**Kind**: instance method of [<code>Response</code>](#Response)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>Discord#Message</code> | Message object to respond to. |
+
+<a name="Response+isTriggered"></a>
+
+### response.isTriggered(message)
+Checks whether the trigger pattern matches the message.
+
+**Kind**: instance method of [<code>Response</code>](#Response)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>Discord#Message</code> | The message object to check. |
 
