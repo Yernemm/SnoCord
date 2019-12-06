@@ -83,6 +83,15 @@ class Bot extends EventEmitter {
     }
 
     /**
+     * Set the config object for the bot.
+     * @param {object} config - Config object.
+     */
+    setConfig(config)
+    {
+        this.config = config;
+    }
+
+    /**
      * Loops through each response, attempting to find one that will trigger on the given message.
      * @param {Message} message The message
      * @returns {Array<Response>} - Array of all matching responses.
