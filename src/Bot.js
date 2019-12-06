@@ -17,7 +17,7 @@ class Bot extends EventEmitter {
         super();
         const options = mergeDefault(opts, Bot.defaultOptions);
 
-        if (!options.config) throw new Error('No config object provided');
+        //if (!options.config) throw new Error('No config object provided');
         this.config = mergeDefault(options.config, Bot.defaultConfigOptions);
         this.client = new Discord.Client(options.client);
 
