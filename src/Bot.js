@@ -77,12 +77,14 @@ class Bot extends EventEmitter {
     /**
      * Loops through each response, attempting to find one that will trigger on the given message.
      * @param {Message} message The message
+     * @returns {Array<Response>} - Array of all matching responses.
      */
     tryResponses(message) {
+        let matching = [];
         for (let resp of this.responses) {
-            if (resp.isTriggered(message)) return resp;
+            if (resp.isTriggered(message)) matching.push(resp);
         }
-        return null;
+        return matching;
     }
 }
 
