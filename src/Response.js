@@ -40,7 +40,7 @@ class Response {
         {
             this._respond(message, response, messageOptions);
         }
-        this.funct(message, respond)
+        this.funct(message, respond.bind(this))
     }
 
     /**

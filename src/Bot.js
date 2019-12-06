@@ -40,6 +40,25 @@ class Bot extends EventEmitter {
      * });
      */
     async init(callbacks) {
+        this.client.on('ready', ()=> console.log("SnoCord Ready"));
+        this.client.on('message', (message) => {
+            console.log("uh oh")
+            const responses = this.tryResponses(message);
+
+            if (responses.length > 0) {
+                
+                //Run each response.
+                //Emit each response with the response class type.
+                //e.g. Command will emit ('Command', response)
+            responses.forEach(response => {
+                response.run(message)
+                this.emit(response.constructor.name, response)
+            }); 
+            } else {
+                this.emit('message', message);
+            }
+        });
+
         const { preInit, postInit } = mergeDefault(callbacks, Bot.defaultInitCallbacks);
 
         if (!this.config.token) throw new Error('No token provided');
@@ -47,6 +66,8 @@ class Bot extends EventEmitter {
         if (preInit) await preInit.call(this);
 
         await this.client.login(this.config.token);
+
+        
 
         this.client.once('ready', async () => {
             if (postInit) await postInit.call(this);
@@ -58,22 +79,8 @@ class Bot extends EventEmitter {
                 });
             }
 
-            this.client.on('message', (message) => {
-                const responses = this.tryResponses(message);
-
-                if (responses.length > 0) {
-                    
-                    //Run each response.
-                    //Emit each response with the response class type.
-                    //e.g. Command will emit ('Command', response)
-                responses.forEach(response => {
-                    response.run(message)
-                    this.emit(response.constructor.name, response)
-                }); 
-                } else {
-                    this.emit('message', message);
-                }
-            });
+            
+            
         });
     }
 
