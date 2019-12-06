@@ -44,7 +44,8 @@ class Bot extends EventEmitter {
         this.client.on('message', (message) => {
             const responses = this.tryResponses(message);
 
-            if (responses.length > 0) {
+            //Never run responses to itself
+            if (responses.length > 0 && message.author.id !== this.client.user.id) {
                 
                 //Run each response.
                 //Emit each response with the response class type.

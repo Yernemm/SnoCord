@@ -27,7 +27,7 @@ class Response {
         if(response.length > 2000){ 
             response = response.substring(0, 1997) + "...";
         }
-        message.reply(response, messageOptions);
+        message.channel.send(response, messageOptions);
     }
 
     /**
