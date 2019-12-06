@@ -42,7 +42,6 @@ class Bot extends EventEmitter {
     async init(callbacks) {
         this.client.on('ready', ()=> console.log("SnoCord Ready"));
         this.client.on('message', (message) => {
-            console.log("uh oh")
             const responses = this.tryResponses(message);
 
             if (responses.length > 0) {
