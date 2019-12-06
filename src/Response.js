@@ -34,7 +34,7 @@ class Response {
      * Run the response code to a message.
      * @param {Discord#Message} message - Message object to respond to.
      */
-    run(message)
+    run(message, bot)
     {
         function respond(response, messageOptions = {})
         {
