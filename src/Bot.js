@@ -16,8 +16,7 @@ class Bot extends EventEmitter {
         this.config = mergeDefault(options.config, Bot.defaultConfigOptions);
         this.client = new Discord.Client(options.client);
 
-        this.commands = new Set();
-        this.invokers = new Set();
+        this.responses = new Set();
     }
 
     /**
@@ -55,10 +54,11 @@ class Bot extends EventEmitter {
             }
 
             this.client.on('message', (message) => {
-                const parsed = this.parseCommand(message);
+                const response = this.tryResponses(message);
 
-                if (parsed) {
-                    this.emit('command', parsed);
+                if (response) {
+                    // Do something?
+                    // this.emit('response', response);
                 } else {
                     this.emit('message', message);
                 }
@@ -72,12 +72,14 @@ class Bot extends EventEmitter {
     }
 
     /**
-     * Parse a command into an object containing info about the command.
-     * @param {Discord.Message} message The message to try parsing
-     * @returns {Object|null}
+     * Loops through each response, attempting to find one that will trigger on the given message.
+     * @param {Message} message The message
      */
-    parseCommand(message, prefix) {
-        return parseCommand(this, message, prefix);
+    tryResponses(message) {
+        for (let resp of this.responses) {
+            if (resp.isTriggered(message.contents)) return resp;
+        }
+        return null;
     }
 }
 
