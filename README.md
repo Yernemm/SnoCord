@@ -9,18 +9,21 @@ not actually finished
 
 <dl>
 <dt><a href="#Bot">Bot</a></dt>
-<dd></dd>
+<dd><p>Main class which everything starts from.</p>
+</dd>
 <dt><a href="#Command">Command</a></dt>
-<dd><p>Command class only to be instantiated by methods inside Bot. Do not manually instantiate.</p>
+<dd><p>Child class of Response - Provides additional functionality for commands.</p>
 </dd>
 <dt><a href="#Response">Response</a></dt>
-<dd><p>Response class only to be instantiated by methods inside Bot. Do not manually instantiate.</p>
+<dd><p>Generic class which handles responses to user messages.</p>
 </dd>
 </dl>
 
 <a name="Bot"></a>
 
 ## Bot
+Main class which everything starts from.
+
 **Kind**: global class  
 
 * [Bot](#Bot)
@@ -28,7 +31,11 @@ not actually finished
     * _instance_
         * [.mention](#Bot+mention)
         * [.init(token, [callback])](#Bot+init) ⇒ <code>Promise.&lt;void&gt;</code>
-        * [.tryResponses(message)](#Bot+tryResponses)
+        * [.setConfig(config)](#Bot+setConfig)
+        * [.tryResponses(message)](#Bot+tryResponses) ⇒ [<code>Array.&lt;Response&gt;</code>](#Response)
+        * [.addResponse(trigger, funct)](#Bot+addResponse)
+        * [.addCommand(commandWord, aliases, info, funct)](#Bot+addCommand)
+        * [.addCustomResponse(response)](#Bot+addCustomResponse)
     * _static_
         * [.defaultConfigOptions](#Bot.defaultConfigOptions)
             * [.mentionAsPrefix](#Bot.defaultConfigOptions.mentionAsPrefix)
@@ -67,16 +74,63 @@ new Bot(options).init({
     }
 });
 ```
-<a name="Bot+tryResponses"></a>
+<a name="Bot+setConfig"></a>
 
-### bot.tryResponses(message)
-Loops through each response, attempting to find one that will trigger on the given message.
+### bot.setConfig(config)
+Set the config object for the bot.
 
 **Kind**: instance method of [<code>Bot</code>](#Bot)  
 
 | Param | Type | Description |
 | --- | --- | --- |
+| config | <code>object</code> | Config object. |
+
+<a name="Bot+tryResponses"></a>
+
+### bot.tryResponses(message) ⇒ [<code>Array.&lt;Response&gt;</code>](#Response)
+Loops through each response, attempting to find one that will trigger on the given message.
+
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+**Returns**: [<code>Array.&lt;Response&gt;</code>](#Response) - - Array of all matching responses.  
+
+| Param | Type | Description |
+| --- | --- | --- |
 | message | <code>Message</code> | The message |
+
+<a name="Bot+addResponse"></a>
+
+### bot.addResponse(trigger, funct)
+Adds Response object to the bot's set of responses.
+
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| trigger | <code>RegExp</code> \| <code>function</code> | The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean. |
+| funct | <code>function</code> | Code to run when triggered. Will pass two parameters: The full discord message object to respond to, respond function which repsonds to the message. |
+
+<a name="Bot+addCommand"></a>
+
+### bot.addCommand(commandWord, aliases, info, funct)
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| commandWord | <code>string</code> | The word which will execute the command. |
+| aliases | <code>Array.&lt;string&gt;</code> | Array of all command aliases. |
+| info | <code>object</code> | Info metadata object for command. |
+| funct | <code>function</code> | Code to run when triggered. Will pass two parameters: object containing parsed command data and message object, respond function which repsonds to the message. |
+
+<a name="Bot+addCustomResponse"></a>
+
+### bot.addCustomResponse(response)
+Add a custom response object to the list. (Not recommended for standard response types)
+
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| response | [<code>Response</code>](#Response) | Object of Response or class which extends response. |
 
 <a name="Bot.defaultConfigOptions"></a>
 
@@ -93,13 +147,24 @@ Prefixing the message with a ping to the bot will work the same as using the bot
 <a name="Command"></a>
 
 ## Command
-Command class only to be instantiated by methods inside Bot. Do not manually instantiate.
+Child class of Response - Provides additional functionality for commands.
 
 **Kind**: global class  
+<a name="Command+run"></a>
+
+### command.run(message)
+Run the response code to a message.
+
+**Kind**: instance method of [<code>Command</code>](#Command)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>Discord#Message</code> | Message object to respond to. |
+
 <a name="Response"></a>
 
 ## Response
-Response class only to be instantiated by methods inside Bot. Do not manually instantiate.
+Generic class which handles responses to user messages.
 
 **Kind**: global class  
 
