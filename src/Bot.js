@@ -57,11 +57,17 @@ class Bot extends EventEmitter {
             }
 
             this.client.on('message', (message) => {
-                const response = this.tryResponses(message);
+                const responses = this.tryResponses(message);
 
-                if (response) {
-                    // Do something?
-                    // this.emit('response', response);
+                if (responses.length > 0) {
+                    
+                    //Run each response.
+                    //Emit each response with the response class type.
+                    //e.g. Command will emit ('Command', response)
+                responses.forEach(response => {
+                    response.run(message)
+                    this.emit(response.constructor.name, response)
+                }); 
                 } else {
                     this.emit('message', message);
                 }
