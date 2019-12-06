@@ -7,7 +7,7 @@ class Response {
 
     /**
      * Creates Response object.
-     * @param {RegExp} trigger - The RegExp pattern to match to trigger this response.
+     * @param {RegExp|Function(Discord#Message)} trigger - The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean.
      * @param {Function} funct - Code to run when triggered. Will pass response object.
      */
     constructor(trigger, funct)
@@ -45,11 +45,11 @@ class Response {
 
     /**
      * Checks whether the trigger pattern matches the message.
-     * @param {string} msg - The message to check.
+     * @param {Discord#Message} message - The message object to check.
      */
-    isTriggered(msg)
+    isTriggered(message)
     {
-        return this.trigger.test(msg);
+        return typeof this.trigger === 'function' ? this.trigger(message) : this.trigger.test(message.content)
     }
 }
 
