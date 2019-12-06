@@ -6,6 +6,9 @@ const { mergeDefault, parseCommand } = require('./utils.js');
 // A set containing all of Discord.js' events except `message`
 const events = Object.values(Discord.Constants.Events);
 
+/**
+ * Main class which everything starts from.
+ */
 class Bot extends EventEmitter {
     /** Creates a new Bot instance. */
     constructor(opts) {
@@ -77,7 +80,7 @@ class Bot extends EventEmitter {
      */
     tryResponses(message) {
         for (let resp of this.responses) {
-            if (resp.isTriggered(message.contents)) return resp;
+            if (resp.isTriggered(message)) return resp;
         }
         return null;
     }

@@ -1,7 +1,7 @@
 'use strict';
 const Response = require('./Response.js');
 /**
- * Command class only to be instantiated by methods inside Bot. Do not manually instantiate.
+ * Child class of Response - Provides additional functionality for commands.
  */
 class Command extends Response {
 

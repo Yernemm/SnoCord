@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Response class only to be instantiated by methods inside Bot. Do not manually instantiate.
+ * Generic class which handles responses to user messages.
  */
 class Response {
 
