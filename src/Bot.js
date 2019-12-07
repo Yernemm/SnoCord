@@ -123,9 +123,10 @@ class Bot extends EventEmitter {
      * Adds Response object to the bot's set of responses.
      * @param {RegExp|Function(Discord#Message)} trigger - The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean.
      * @param {Function(Discord#Message, respond)} funct - Code to run when triggered. Will pass two parameters: The full discord message object to respond to, respond function which repsonds to the message.
+     * @param {integer} priority - (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0.
      */
-    addResponse(trigger, funct){
-        this.responses.add(new Response(trigger, funct));
+    addResponse(trigger, funct, priority = 0){
+        this.responses.add(new Response(trigger, funct, priority));
     }
 
     /**
@@ -134,11 +135,12 @@ class Bot extends EventEmitter {
      * @param {Array<string>} aliases - Array of all command aliases.
      * @param {object} info - Info metadata object for command.
      * @param {Function(data, respond)} funct - Code to run when triggered. Will pass two parameters: object containing parsed command data and message object, respond function which repsonds to the message.
+          * @param {integer} priority - (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0.
      */
-    addCommand(commandWord, aliases, info, funct){
+    addCommand(commandWord, aliases, info, funct, priority = 0){
         this.responses.add(
             new Command([`<@${this.client.user.id}> `,`<@!${this.client.user.id}> `, this.config.prefix],
-            commandWord,aliases, info, funct))
+            commandWord,aliases, info, funct, priority));
     }
 
     /**
