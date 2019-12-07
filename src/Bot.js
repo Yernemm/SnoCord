@@ -47,12 +47,20 @@ class Bot extends EventEmitter {
             //Never run responses to itself
             if (responses.length > 0 && message.author.id !== this.client.user.id) {
                 
+                let highestPriority = -99999;
+
+                responses.forEach(response =>{
+                    if(response.priority > highestPriority) highestPriority = response.priority;
+                })
+
                 //Run each response.
                 //Emit each response with the response class type.
                 //e.g. Command will emit ('Command', response)
             responses.forEach(response => {
-                response.run(message)
-                this.emit(response.constructor.name, response)
+                if(response.priority === highestPriority){
+                response.run(message);
+                this.emit(response.constructor.name, response);
+                }
             }); 
             } else {
                 this.emit('message', message);

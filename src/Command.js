@@ -6,7 +6,7 @@ const utils = require("./utils.js");
  */
 class Command extends Response {
 
-    constructor(prefixes, commandWord, aliases, metadata, funct) 
+    constructor(prefixes, commandWord, aliases, metadata, funct, priority = 0) 
     {
 
         //regex builder
@@ -31,7 +31,7 @@ class Command extends Response {
 
         let finalRegex = new RegExp(regexString);
 
-        super(finalRegex, funct);
+        super(finalRegex, funct, priority);
         
         this.metadata = metadata;
         this.metadata.aliases = aliases;

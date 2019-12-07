@@ -10,10 +10,11 @@ class Response {
      * @param {RegExp|Function(Discord#Message)} trigger - The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean.
      * @param {Function} funct - Code to run when triggered. Will pass response object.
      */
-    constructor(trigger, funct)
+    constructor(trigger, funct, priority = 0)
     {
         this.trigger = trigger;
         this.funct = funct;
+        this.priority = priority;
     }
     /**
      * 
