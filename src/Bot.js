@@ -1,7 +1,7 @@
 'use strict';
 const Discord = require('discord.js');
 const EventEmitter = require('events');
-const { mergeDefault, parseCommand } = require('./utils.js');
+const { mergeDefault } = require('./utils.js');
 const Response = require("./Response.js");
 const Command = require("./Command.js");
 
@@ -49,19 +49,20 @@ class Bot extends EventEmitter {
                 
                 let highestPriority = -99999;
 
-                responses.forEach(response =>{
-                    if(response.priority > highestPriority) highestPriority = response.priority;
-                })
+                responses.forEach(response => {
+                    if (response.priority > highestPriority)
+                        highestPriority = response.priority;
+                });
 
                 //Run each response.
                 //Emit each response with the response class type.
                 //e.g. Command will emit ('Command', response)
-            responses.forEach(response => {
-                if(response.priority === highestPriority){
-                response.run(message);
-                this.emit(response.constructor.name, response);
-                }
-            }); 
+                responses.forEach(response => {
+                    if (response.priority === highestPriority) {
+                        response.run(message);
+                        this.emit(response.constructor.name, response);
+                    }
+                });
             } else {
                 this.emit('message', message);
             }
@@ -86,9 +87,6 @@ class Bot extends EventEmitter {
                     this.emit(event, ...args);
                 });
             }
-
-            
-            
         });
     }
 
@@ -161,7 +159,7 @@ Bot.defaultOptions = {
 Bot.defaultConfigOptions = {
     /** Prefixing the message with a ping to the bot will work the same as using the bot's prefix. */
     mentionAsPrefix: true,
-    prefix: "!"
+    prefix: '!'
 };
 
 Bot.defaultInitCallbacks = {

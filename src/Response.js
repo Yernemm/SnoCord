@@ -16,6 +16,7 @@ class Response {
         this.funct = funct;
         this.priority = priority;
     }
+
     /**
      * 
      * @param {Discord#Message} message - Message object to respond to.
@@ -26,7 +27,7 @@ class Response {
     {
         //Trim response to 2000 chars - discord's message char limit.
         if(response.length > 2000){ 
-            response = response.substring(0, 1997) + "...";
+            response = response.substring(0, 1997) + '...';
         }
         message.channel.send(response, messageOptions);
     }
@@ -37,11 +38,10 @@ class Response {
      */
     run(message, bot)
     {
-        function respond(response, messageOptions = {})
-        {
+        const respond = (response, messageOptions = {}) => {
             this._respond(message, response, messageOptions);
-        }
-        this.funct(message, respond.bind(this))
+        };
+        this.funct(message, respond);
     }
 
     /**
@@ -50,7 +50,7 @@ class Response {
      */
     isTriggered(message)
     {
-        return typeof this.trigger === 'function' ? this.trigger(message) : this.trigger.test(message.content)
+        return typeof this.trigger === 'function' ? this.trigger(message) : this.trigger.test(message.content);
     }
 }
 
