@@ -7,15 +7,32 @@ not actually finished
 
 ## Classes
 
+## Classes
+
 <dl>
 <dt><a href="#Bot">Bot</a></dt>
 <dd><p>Main class which everything starts from.</p>
 </dd>
 <dt><a href="#Command">Command</a></dt>
-<dd><p>Child class of Response - Provides additional functionality for commands.</p>
+<dd><p>Child class of Response - Provides additional functionality for commands.
+Default priority: 5</p>
 </dd>
 <dt><a href="#Response">Response</a></dt>
 <dd><p>Generic class which handles responses to user messages.</p>
+</dd>
+</dl>
+
+## Functions
+
+<dl>
+<dt><a href="#parseCommand">parseCommand(bot, message, prefixOverride)</a></dt>
+<dd><p>Parses a message object into command objects.</p>
+</dd>
+<dt><a href="#isCommandSyntax">isCommandSyntax(bot, message, prefixOverride)</a></dt>
+<dd><p>Checks if the message is syntaxically a command. Does not check if it is an existing command.</p>
+</dd>
+<dt><a href="#isCommand">isCommand(bot, message, prefixOverride, commandName)</a></dt>
+<dd><p>Checks if the message is a given command.</p>
 </dd>
 </dl>
 
@@ -33,8 +50,9 @@ Main class which everything starts from.
         * [.init(token, [callback])](#Bot+init) ⇒ <code>Promise.&lt;void&gt;</code>
         * [.setConfig(config)](#Bot+setConfig)
         * [.tryResponses(message)](#Bot+tryResponses) ⇒ [<code>Array.&lt;Response&gt;</code>](#Response)
-        * [.addResponse(trigger, funct)](#Bot+addResponse)
-        * [.addCommand(commandWord, aliases, info, funct)](#Bot+addCommand)
+        * [.addResponse(trigger, funct, priority)](#Bot+addResponse)
+        * [.addCommand(commandWord, aliases, info, funct, priority)](#Bot+addCommand)
+        * [.addCommandHandler(path)](#Bot+addCommandHandler)
         * [.addCustomResponse(response)](#Bot+addCustomResponse)
     * _static_
         * [.defaultConfigOptions](#Bot.defaultConfigOptions)
@@ -99,19 +117,28 @@ Loops through each response, attempting to find one that will trigger on the giv
 
 <a name="Bot+addResponse"></a>
 
-### bot.addResponse(trigger, funct)
+### bot.addResponse(trigger, funct, priority)
 Adds Response object to the bot's set of responses.
 
 **Kind**: instance method of [<code>Bot</code>](#Bot)  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| trigger | <code>RegExp</code> \| <code>function</code> | The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean. |
-| funct | <code>function</code> | Code to run when triggered. Will pass two parameters: The full discord message object to respond to, respond function which repsonds to the message. |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| trigger | <code>RegExp</code> \| <code>function</code> |  | The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean. |
+| funct | <code>function</code> |  | Code to run when triggered. Will pass two parameters: The full discord message object to respond to, respond function which repsonds to the message. |
+| priority | <code>integer</code> | <code>0</code> | (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0. |
 
+**Example**  
+```js
+bot.addResponse(() => {return true;}, (r) => {
+     r.respond("I like responding.")
+  }, -1);
+
+ bot.addResponse(/^(hello bot)/i, (r) => r.respond("hi human"));
+```
 <a name="Bot+addCommand"></a>
 
-### bot.addCommand(commandWord, aliases, info, funct)
+### bot.addCommand(commandWord, aliases, info, funct, priority)
 **Kind**: instance method of [<code>Bot</code>](#Bot)  
 
 | Param | Type | Description |
@@ -120,7 +147,25 @@ Adds Response object to the bot's set of responses.
 | aliases | <code>Array.&lt;string&gt;</code> | Array of all command aliases. |
 | info | <code>object</code> | Info metadata object for command. |
 | funct | <code>function</code> | Code to run when triggered. Will pass two parameters: object containing parsed command data and message object, respond function which repsonds to the message. |
+| priority | <code>integer</code> | (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0. |
 
+**Example**  
+```js
+bot.addCommand("help",(r)=>{r.respond(`I won't help you, ${r.message.author}`)})
+```
+<a name="Bot+addCommandHandler"></a>
+
+### bot.addCommandHandler(path)
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| path | <code>string</code> | The local path to the directory containing only command class files. |
+
+**Example**  
+```js
+bot.addCommandHandler('./commands/');
+```
 <a name="Bot+addCustomResponse"></a>
 
 ### bot.addCustomResponse(response)
@@ -148,6 +193,7 @@ Prefixing the message with a ping to the bot will work the same as using the bot
 
 ## Command
 Child class of Response - Provides additional functionality for commands.
+Default priority: 5
 
 **Kind**: global class  
 <a name="Command+run"></a>
@@ -218,3 +264,82 @@ Checks whether the trigger pattern matches the message.
 | --- | --- | --- |
 | message | <code>Discord#Message</code> | The message object to check. |
 
+<a name="parseCommand"></a>
+
+## parseCommand(bot, message, prefixOverride)
+Parses a message object into command objects.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| bot | [<code>Bot</code>](#Bot) | The bot instance. |
+| message | <code>Discord#Message</code> | The message object to parse.message |
+| prefixOverride | <code>string</code> | Optional custom prefix. |
+
+<a name="isCommandSyntax"></a>
+
+## isCommandSyntax(bot, message, prefixOverride)
+Checks if the message is syntaxically a command. Does not check if it is an existing command.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| bot | [<code>Bot</code>](#Bot) | The bot instance. |
+| message | <code>Discord#Message</code> | The message object to parse.message |
+| prefixOverride | <code>string</code> | Optional custom prefix. |
+
+<a name="isCommand"></a>
+
+## isCommand(bot, message, prefixOverride, commandName)
+Checks if the message is a given command.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| bot | [<code>Bot</code>](#Bot) | The bot instance. |
+| message | <code>Discord#Message</code> | The message object to parse.message |
+| prefixOverride | <code>string</code> | Optional custom prefix. |
+| commandName | <code>string</code> | Name of command. |
+
+
+
+## Examples
+
+### Sample command using the command handler:
+```
+class ExampleCommand
+{
+    constructor()
+    {
+        this.metadata = {
+            commandWord: 'sample',
+            aliases: [],
+            description: 'Adds num1 and num2 and pings you in return that many times.',
+            usage: 'num1 num2'
+        };
+    }
+
+    run(sno)
+    {
+        //sno contains { bot, message, command, args, argsText, respond }
+        let num1 = sno.args[0] * 1;
+        let num2 = sno.args[1] * 1;
+        let sum = Math.floor(num1 + num2);
+        if(sum > 0){
+            if (sum > 1000){sum = 1000;}
+            let message = "";
+            for(let i = 0; i < sum; i++){
+                message += sno.message.author + " "; 
+            }
+            sno.respond(message);
+        }else{
+            sno.respond("I can't ping you less than 0 times!");
+        }
+
+    }
+}
+module.exports = ExampleCommand;
+```
