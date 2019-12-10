@@ -4,6 +4,7 @@ const EventEmitter = require('events');
 const { mergeDefault } = require('./utils.js');
 const Response = require("./Response.js");
 const Command = require("./Command.js");
+const fs = require('fs');
 
 // A set containing all of Discord.js' events except `message`
 const events = Object.values(Discord.Constants.Events);
@@ -127,6 +128,12 @@ class Bot extends EventEmitter {
      * @param {RegExp|Function(Discord#Message)} trigger - The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean.
      * @param {Function(Discord#Message, respond)} funct - Code to run when triggered. Will pass two parameters: The full discord message object to respond to, respond function which repsonds to the message.
      * @param {integer} priority - (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0.
+     * @example
+     *  bot.addResponse(() => {return true;}, (r) => {
+     *      r.respond("I like responding.")
+     *   }, -1);
+     *
+     *  bot.addResponse(/^(hello bot)/i, (r) => r.respond("hi human"));
      */
     addResponse(trigger, funct, priority = 0){
         this.responses.add(new Response(trigger, funct, priority));
@@ -138,11 +145,38 @@ class Bot extends EventEmitter {
      * @param {Array<string>} aliases - Array of all command aliases.
      * @param {object} info - Info metadata object for command.
      * @param {Function(data, respond)} funct - Code to run when triggered. Will pass two parameters: object containing parsed command data and message object, respond function which repsonds to the message.
-          * @param {integer} priority - (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0.
+     * @param {integer} priority - (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0.
+     * @example
+     * bot.addCommand("help",(r)=>{r.respond(`I won't help you, ${r.message.author}`)})
      */
     addCommand(commandWord, funct, aliases = [], info = Command.defaultMetadata, priority = 0){
         this.responses.add(
             new Command(commandWord,aliases, info, funct, priority));
+        console.log(`Added command ${commandWord}`);
+    }
+
+    /**
+     * 
+     * @param {string} path - The local path to the directory containing only command class files.
+     * @example
+     * bot.addCommandHandler('./commands/');
+     */
+    addCommandHandler(path){
+        fs.readdir(path, (err, files) => {
+            if (err) return console.error(err);
+            files.forEach(file => {
+              if (!file.endsWith(".js")) return;
+              let cmdClass = require.main.require(`${path}${file}`);
+              let cmdObj = new cmdClass();
+              this.addCommand(
+                  cmdObj.metadata.commandWord,
+                  cmdObj.run,
+                  cmdObj.metadata.aliases,
+                  cmdObj.metadata,
+                  5
+                  );
+            });
+          });
     }
 
     /**

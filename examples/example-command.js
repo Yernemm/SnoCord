@@ -3,7 +3,7 @@ class ExampleCommand
     constructor()
     {
         this.metadata = {
-            commndWord: 'sample',
+            commandWord: 'sample',
             aliases: [],
             description: 'Adds num1 and num2 and pings you in return that many times.',
             usage: 'num1 num2'
@@ -17,6 +17,7 @@ class ExampleCommand
         let num2 = sno.args[1] * 1;
         let sum = Math.floor(num1 + num2);
         if(sum > 0){
+            if (sum > 1000){sum = 1000;}
             let message = "";
             for(let i = 0; i < sum; i++){
                 message += sno.message.author + " "; 
