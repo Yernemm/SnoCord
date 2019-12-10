@@ -30,7 +30,8 @@ class Command extends Response {
         const respond = (response, messageOptions = {}) => {
             this._respond(message, response, messageOptions);
         };
-        this.funct({data, bot, respond, message});
+        data.respond = respond;
+        this.funct(data);
     }
 
 
