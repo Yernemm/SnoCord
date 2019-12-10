@@ -7,8 +7,6 @@ not actually finished
 
 ## Classes
 
-## Classes
-
 <dl>
 <dt><a href="#Bot">Bot</a></dt>
 <dd><p>Main class which everything starts from.</p>
