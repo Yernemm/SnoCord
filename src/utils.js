@@ -13,6 +13,12 @@ function mergeDefault(def, given) {
   return given;
 }
 
+/**
+ * Parses a message object into command objects.
+ * @param {Bot} bot - The bot instance.
+ * @param {Discord#Message} message - The message object to parse.message
+ * @param {string} prefixOverride - Optional custom prefix.
+ */
 function parseCommand(bot, message, prefixOverride) {
     if (message.author.bot) return null;
 
@@ -36,7 +42,31 @@ function parseCommand(bot, message, prefixOverride) {
     return { bot, message, command, args, argsText };
 }
 
+/**
+ * Checks if the message is syntaxically a command. Does not check if it is an existing command.
+ * @param {Bot} bot - The bot instance.
+ * @param {Discord#Message} message - The message object to parse.message
+ * @param {string} prefixOverride - Optional custom prefix.
+ */
+function isCommandSyntax(bot, message, prefixOverride) {
+    return parseCommand(bot, message, prefixOverride) !== null;
+}
+
+/**
+ * Checks if the message is a given command.
+ * @param {Bot} bot - The bot instance.
+ * @param {Discord#Message} message - The message object to parse.message
+ * @param {string} prefixOverride - Optional custom prefix.
+ * @param {string} commandName - Name of command.
+ */
+function isCommand(bot, message, prefixOverride, commandName){
+  return isCommandSyntax(bot, message, prefixOverride) 
+  && parseCommand(bot, message, prefixOverride).command === commandName;
+}
+
 module.exports = {
   mergeDefault,
-  parseCommand
+  parseCommand,
+  isCommand,
+  isCommandSyntax
 };
