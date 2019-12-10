@@ -41,16 +41,16 @@ class Response {
         const respond = (response, messageOptions = {}) => {
             this._respond(message, response, messageOptions);
         };
-        this.funct(message, respond);
+        this.funct({message, bot, respond, message});
     }
 
     /**
      * Checks whether the trigger pattern matches the message.
      * @param {Discord#Message} message - The message object to check.
      */
-    isTriggered(message)
+    isTriggered(message,bot)
     {
-        return typeof this.trigger === 'function' ? this.trigger(message) : this.trigger.test(message.content);
+        return typeof this.trigger === 'function' ? this.trigger(message,bot) : this.trigger.test(message.content);
     }
 }
 

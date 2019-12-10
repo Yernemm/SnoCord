@@ -42,7 +42,12 @@ class Bot extends EventEmitter {
     async init(callbacks) {
         this.client.on('ready', ()=> console.log("SnoCord Ready"));
         this.client.on('message', (message) => {
-            const responses = this.tryResponses(message);
+            //Set default prefix. Can be altered by server later.
+            message.snocord = {
+                config: this.config,
+                prefix: this.config.prefix
+            };
+            const responses = this.tryResponses(message,this);
 
             //Never run responses to itself
             if (responses.length > 0 && message.author.id !== this.client.user.id) {
@@ -59,7 +64,7 @@ class Bot extends EventEmitter {
                 //e.g. Command will emit ('Command', response)
                 responses.forEach(response => {
                     if (response.priority === highestPriority) {
-                        response.run(message);
+                        response.run(message, this);
                         this.emit(response.constructor.name, response);
                     }
                 });
@@ -109,10 +114,10 @@ class Bot extends EventEmitter {
      * @param {Message} message The message
      * @returns {Array<Response>} - Array of all matching responses.
      */
-    tryResponses(message) {
+    tryResponses(message,bot) {
         let matching = [];
         for (let resp of this.responses) {
-            if (resp.isTriggered(message)) matching.push(resp);
+            if (resp.isTriggered(message,bot)) matching.push(resp);
         }
         return matching;
     }
@@ -135,10 +140,9 @@ class Bot extends EventEmitter {
      * @param {Function(data, respond)} funct - Code to run when triggered. Will pass two parameters: object containing parsed command data and message object, respond function which repsonds to the message.
           * @param {integer} priority - (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0.
      */
-    addCommand(commandWord, aliases, info, funct, priority = 0){
+    addCommand(commandWord, funct, aliases = [], info = Command.defaultMetadata, priority = 0){
         this.responses.add(
-            new Command([`<@${this.client.user.id}> `,`<@!${this.client.user.id}> `, this.config.prefix],
-            commandWord,aliases, info, funct, priority));
+            new Command(commandWord,aliases, info, funct, priority));
     }
 
     /**

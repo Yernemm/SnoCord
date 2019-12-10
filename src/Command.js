@@ -2,33 +2,18 @@
 const Response = require('./Response.js');
 const utils = require('./utils.js');
 
-/**
+/** 
  * Child class of Response - Provides additional functionality for commands.
+ * Default priority: 5
  */
 class Command extends Response {
 
-    constructor(prefixes, commandWord, aliases, metadata, funct, priority = 0) {
-        //regex builder
+    constructor(commandWord, aliases, metadata, funct, priority = 5) {
 
-        let regexString = '^((';
 
-        prefixes.forEach(p => {
-            //escape all prefix characters
-            regexString += p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '|';
-        });
 
-        //trim the last '|'
-        regexString = regexString.substring(0, regexString.length - 1);
-        regexString += ')(' + commandWord + '|';
-
-        aliases.forEach(a => regexString += a + '|');
-
-        regexString = regexString.substring(0, regexString.length - 1);
-        regexString += ')(?!\S))';
-
-        let finalRegex = new RegExp(regexString);
-
-        super(finalRegex, funct, priority);
+        super((message,bot)=>{return utils.isCommand(bot,message,message.prefix,commandWord);},
+         funct, priority);
         
         this.metadata = metadata;
         this.metadata.aliases = aliases;
@@ -40,12 +25,12 @@ class Command extends Response {
      * @param {Discord#Message} message - Message object to respond to.
      */
     run(message, bot) {
-        let data = utils.parseCommand();
+        let data = utils.parseCommand(bot, message, message.snocord.prefix);
         data.message = message;
         const respond = (response, messageOptions = {}) => {
             this._respond(message, response, messageOptions);
         };
-        this.funct(data, respond);
+        this.funct({data, bot, respond, message});
     }
 
 
