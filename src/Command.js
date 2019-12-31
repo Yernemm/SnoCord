@@ -10,8 +10,6 @@ class Command extends Response {
 
     constructor(commandWord, aliases, metadata, funct, priority = 5) {
 
-
-
         super((message,bot)=>{return utils.isCommand(bot,message,message.prefix,commandWord);},
          funct, priority);
         

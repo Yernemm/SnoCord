@@ -26,6 +26,9 @@ class Response {
     _respond(message, response, messageOptions = {})
     {
         //Trim response to 2000 chars - discord's message char limit.
+        if(response.length <= 0)
+            return; //Cannot send empty message.
+
         if(response.length > 2000){ 
             response = response.substring(0, 1997) + '...';
         }
