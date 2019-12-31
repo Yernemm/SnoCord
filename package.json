@@ -1,6 +1,6 @@
 {
   "name": "snocord",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "A Discord.js framework, used by SnoBot.",
   "main": "index.js",
   "scripts": {
