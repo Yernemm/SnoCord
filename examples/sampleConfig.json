@@ -1,0 +1,9 @@
+{
+    "name": "Some Bot",
+    "author": "Some User",
+    "authorID": "000000000000000000",
+    "token": "",
+    "prefix": "!",
+    "mentionAsPrefix": true,
+    "defaultTimeout": 0
+}

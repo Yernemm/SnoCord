@@ -23,6 +23,7 @@ class Bot extends EventEmitter {
         this.client = new Discord.Client(options.client);
 
         this.responses = new Set();
+        this.lastRun = {};
 
     }
 
