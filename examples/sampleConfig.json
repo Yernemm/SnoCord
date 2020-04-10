@@ -5,5 +5,5 @@
     "token": "",
     "prefix": "!",
     "mentionAsPrefix": true,
-    "defaultTimeout": 0
+    "commandTimeout": 0
 }
