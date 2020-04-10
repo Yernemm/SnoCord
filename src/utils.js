@@ -64,9 +64,18 @@ function isCommand(bot, message, prefixOverride, commandName){
   && parseCommand(bot, message, prefixOverride).command === commandName;
 }
 
+/**
+ * Capitalise first letter of text.
+ * @param {String} string text
+ */
+function capitaliseFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 module.exports = {
   mergeDefault,
   parseCommand,
   isCommand,
-  isCommandSyntax
+  isCommandSyntax,
+  capitaliseFirstLetter
 };

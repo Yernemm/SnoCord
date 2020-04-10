@@ -187,6 +187,20 @@ class Bot extends EventEmitter {
     addCustomResponse(response){
         this.responses.add(response);
     }
+
+    /**
+     * Get all added commands.
+     * @returns array of Command instances.
+     */
+    getAllCommands(){
+        let cmds = []
+        this.responses.forEach(res => {
+            if(res instanceof Command){
+                cmds.push(res);
+            }
+        });
+        return cmds;
+    }
 }
 
 Bot.defaultOptions = {

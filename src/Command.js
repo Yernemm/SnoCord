@@ -16,6 +16,7 @@ class Command extends Response {
         this.metadata = metadata;
         this.metadata.aliases = aliases;
         this.metadata.commandWord = commandWord;
+        this.metadata.category = this.metadata.category ? this.metadata.category : "other";
     }
 
     /**
