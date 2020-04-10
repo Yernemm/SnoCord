@@ -44,7 +44,7 @@ class Response {
         const respond = (response, messageOptions = {}) => {
             this._respond(message, response, messageOptions);
         };
-        this.funct({message, bot, respond, message});
+        this.funct({message, bot, respond});
     }
 
     /**

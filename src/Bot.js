@@ -127,7 +127,7 @@ class Bot extends EventEmitter {
     /**
      * Adds Response object to the bot's set of responses.
      * @param {RegExp|Function(Discord#Message)} trigger - The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean.
-     * @param {Function(Discord#Message, respond)} funct - Code to run when triggered. Will pass two parameters: The full discord message object to respond to, respond function which repsonds to the message.
+     * @param {Function(response)} funct - Code to run when triggered. Will pass an object containing message (Discord#Message), respond function, messageOptions.
      * @param {integer} priority - (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0.
      * @example
      *  bot.addResponse(() => {return true;}, (r) => {
@@ -145,7 +145,7 @@ class Bot extends EventEmitter {
      * @param {string} commandWord - The word which will execute the command.
      * @param {Array<string>} aliases - Array of all command aliases.
      * @param {object} info - Info metadata object for command.
-     * @param {Function(data, respond)} funct - Code to run when triggered. Will pass two parameters: object containing parsed command data and message object, respond function which repsonds to the message.
+     * @param {Function(response)} funct - Code to run when triggered. Will pass an object containing message (Discord#Message), respond function, messageOptions.
      * @param {integer} priority - (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0.
      * @example
      * bot.addCommand("help",(r)=>{r.respond(`I won't help you, ${r.message.author}`)})
