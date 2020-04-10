@@ -23,13 +23,27 @@ class Command extends Response {
      * @param {Discord#Message} message - Message object to respond to.
      */
     run(message, bot) {
-        let data = utils.parseCommand(bot, message, message.snocord.prefix);
-        data.message = message;
-        const respond = (response, messageOptions = {}) => {
-            this._respond(message, response, messageOptions);
-        };
-        data.respond = respond;
-        this.funct(data);
+        if(this.isRunnableBy(message.member)){
+            let data = utils.parseCommand(bot, message, message.snocord.prefix);
+            data.message = message;
+            const respond = (response, messageOptions = {}) => {
+                this._respond(message, response, messageOptions);
+            };
+            data.respond = respond;
+            this.funct(data);
+        }
+    }
+
+    /**
+     * Check if the member has the required permissions to run this command.
+     * @param {Discord#GuildMember} member Guild member to check.
+     */
+    isRunnableBy(member) {
+        if(this.metadata.permissions){
+            return member.hasPermission(this.metadata.permissions);
+        }else{
+            return true;
+        }
     }
 
 
