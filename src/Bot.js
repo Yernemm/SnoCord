@@ -210,10 +210,14 @@ Bot.defaultOptions = {
 };
 
 /** Default options to fall back on if the config object exists but doesn't have a given option. */
-Bot.defaultConfigOptions = {
-    /** Prefixing the message with a ping to the bot will work the same as using the bot's prefix. */
-    mentionAsPrefix: true,
-    prefix: '!'
+Bot.defaultConfigOptions = {   
+    name: "Some Bot",
+    author: "Some User",
+    authorID: false,
+    token: "",
+    prefix: "!", 
+    mentionAsPrefix: true, /** Prefixing the message with a ping to the bot will work the same as using the bot's prefix. */
+    commandTimeout: 0
 };
 
 Bot.defaultInitCallbacks = {
