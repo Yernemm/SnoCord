@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/Yernemm/SnoCord#readme",
   "dependencies": {
-    "discord.js": "^11.5.1"
+    "discord.js": "^12.1.1"
   },
   "devDependencies": {
     "jsdoc-to-markdown": "^5.0.3"
