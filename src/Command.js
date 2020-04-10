@@ -4,11 +4,11 @@ const utils = require('./utils.js');
 
 /** 
  * Child class of Response - Provides additional functionality for commands.
- * Default priority: 0
+ * Default priority: 5
  */
 class Command extends Response {
 
-    constructor(commandWord, aliases, metadata, funct, priority = 0) {
+    constructor(commandWord, aliases, metadata, funct, priority = 5) {
 
         super((message,bot)=>{return utils.isCommand(bot,message,message.prefix,commandWord);},
          funct, priority);
