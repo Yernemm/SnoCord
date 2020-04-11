@@ -19,9 +19,8 @@ class Bot extends EventEmitter {
         const options = mergeDefault(opts, Bot.defaultOptions);
 
         //if (!options.config) throw new Error('No config object provided');
-        this.config = mergeDefault(options.config, Bot.defaultConfigOptions);
+        this.config = {...Bot.defaultConfigOptions, ...options.config };
         this.client = new Discord.Client(options.client);
-
         this.responses = new Set();
         this.lastRun = {};
 
@@ -109,7 +108,7 @@ class Bot extends EventEmitter {
      */
     setConfig(config)
     {
-        this.config = config;
+        this.config = {...this.config, ...config};
     }
 
     /**
@@ -152,9 +151,10 @@ class Bot extends EventEmitter {
      * bot.addCommand("help",(r)=>{r.respond(`I won't help you, ${r.message.author}`)})
      */
     addCommand(commandWord, funct, aliases = [], info = Command.defaultMetadata, priority = 0){
-        this.responses.add(
-            new Command(commandWord,aliases, info, funct, priority));
+        let newCommand = new Command(commandWord,aliases, info, funct, priority)
+        this.responses.add(newCommand);
         console.log(`Added command ${commandWord}`);
+        console.log(this.responses)
     }
 
     /**
@@ -216,9 +216,17 @@ class Bot extends EventEmitter {
         this.responses.forEach(res => {
             if(res instanceof Command){
                 cmds.push(res);
+                
             }
         });
         return cmds;
+    }
+
+    /**
+     * Adds the pre-made help command to the commands.
+     */
+    addHelpCommand(){
+        this.addCommandClass(require("./commands/help.js"));
     }
 }
 

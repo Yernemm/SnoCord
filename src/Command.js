@@ -13,10 +13,11 @@ class Command extends Response {
         super((message,bot)=>{return utils.isCommand(bot,message,message.prefix,commandWord);},
          funct, priority);
         
-        this.metadata = metadata;
+        this.metadata = {...metadata};
         this.metadata.aliases = aliases;
         this.metadata.commandWord = commandWord;
         this.metadata.category = this.metadata.category ? this.metadata.category : "other";
+
     }
 
     /**
