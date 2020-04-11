@@ -158,6 +158,24 @@ class Bot extends EventEmitter {
     }
 
     /**
+     * Add a command using a command class, similar to what the command handler does.
+     * @param {Command} commandClass Class for this command
+     * @example
+     * bot.addCommandClass(require('./commands/SomeCommand.js'));
+     * bot.addCommandClass(SomeCommandClass);
+     */
+    addCommandClass(commandClass){
+        let cmdObj = new commandClass();
+        this.addCommand(
+            cmdObj.metadata.commandWord,
+            cmdObj.run,
+            cmdObj.metadata.aliases,
+            cmdObj.metadata,
+            5
+            );
+    }
+
+    /**
      * 
      * @param {string} path - The local path to the directory containing only command class files.
      * @example
@@ -214,6 +232,7 @@ Bot.defaultConfigOptions = {
     name: "Some Bot",
     author: "Some User",
     authorID: false,
+    description: "A SnoCord bot",
     token: "",
     prefix: "!", 
     mentionAsPrefix: true, /** Prefixing the message with a ping to the bot will work the same as using the bot's prefix. */
