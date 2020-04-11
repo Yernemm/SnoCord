@@ -86,11 +86,28 @@ function sortJson(obj){
   return ordered;
 }
 
+/**
+ * convert ms to time string
+ * @param {number} duration time in ms
+ * @returns {string} time
+ */
+function msToTime(duration) {
+ let seconds = Math.floor((duration / 1000) % 60),
+    minutes = Math.floor((duration / (1000 * 60)) % 60),
+    hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+    return (hours > 0 ? hours + " hours, " : "" )
+    + (minutes > 0 ? minutes + " minutes, and " : "" )
+    + (seconds != 1 ? seconds + " seconds" : seconds + " second");
+
+}
+
 module.exports = {
   mergeDefault,
   parseCommand,
   isCommand,
   isCommandSyntax,
   capitaliseFirstLetter,
-  sortJson
+  sortJson,
+  msToTime
 };

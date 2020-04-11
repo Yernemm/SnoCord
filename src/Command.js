@@ -8,10 +8,10 @@ const utils = require('./utils.js');
  */
 class Command extends Response {
 
-    constructor(commandWord, aliases, metadata, funct, priority = 5) {
+    constructor(commandWord, aliases, metadata, funct, priority = 5, cooldown = 0) {
 
         super((message,bot)=>{return utils.isCommand(bot,message,message.prefix,commandWord);},
-         funct, priority);
+         funct, priority, cooldown);
         
         this.metadata = {...metadata};
         this.metadata.aliases = aliases;
@@ -46,6 +46,17 @@ class Command extends Response {
         }else{
             return true;
         }
+    }
+
+    /**
+     * Send message if user on cooldown
+     * @param {Discord#message} message message
+     * @param {Bot} bot bot
+     * @param {number} cooldownStamp stamp of time after cooldown is over
+     */
+    runCooldown(message, bot, cooldownStamp)
+    {
+        message.reply(`Please wait **${utils.msToTime(cooldownStamp - Date.now())}** before using another command.`);
     }
 
 

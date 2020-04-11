@@ -10,11 +10,12 @@ class Response {
      * @param {RegExp|Function(Discord#Message)} trigger - The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean.
      * @param {Function} funct - Code to run when triggered. Will pass response object.
      */
-    constructor(trigger, funct, priority = 0)
+    constructor(trigger, funct, priority = 0, cooldown = 0)
     {
         this.trigger = trigger;
         this.funct = funct;
         this.priority = priority;
+        this.cooldown = cooldown;
     }
 
     /**
@@ -54,6 +55,17 @@ class Response {
     isTriggered(message,bot)
     {
         return typeof this.trigger === 'function' ? this.trigger(message,bot) : this.trigger.test(message.content);
+    }
+
+    /**
+     * Do nothing if user on cooldown
+     * @param {Discord#message} message message
+     * @param {Bot} bot bot
+     * @param {number} cooldownStamp stamp of time after cooldown is over
+     */
+    runCooldown(message, bot, cooldownStamp)
+    {
+
     }
 }
 

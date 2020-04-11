@@ -6,5 +6,5 @@
     "token": "",
     "prefix": "!",
     "mentionAsPrefix": true,
-    "commandTimeout": 0
+    "commandCooldown": 2000
 }

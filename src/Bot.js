@@ -22,7 +22,7 @@ class Bot extends EventEmitter {
         this.config = {...Bot.defaultConfigOptions, ...options.config };
         this.client = new Discord.Client(options.client);
         this.responses = new Set();
-        this.lastRun = {};
+        this.userCooldowns = {};
 
     }
 
@@ -65,9 +65,12 @@ class Bot extends EventEmitter {
                 //Emit each response with the response class type.
                 //e.g. Command will emit ('Command', response)
                 responses.forEach(response => {
-                    if (response.priority === highestPriority) {
+                    if (response.priority === highestPriority && (!this.userCooldowns[message.author.id] || this.userCooldowns[message.author.id] < Date.now())) {
                         response.run(message, this);
                         this.emit(response.constructor.name, response);
+                        this.userCooldowns[message.author.id] = Date.now() + response.cooldown;
+                    } else if(this.userCooldowns[message.author.id] >= Date.now()){
+                        response.runCooldown(message, this, this.userCooldowns[message.author.id]);
                     }
                 });
             } else {
@@ -150,8 +153,8 @@ class Bot extends EventEmitter {
      * @example
      * bot.addCommand("help",(r)=>{r.respond(`I won't help you, ${r.message.author}`)})
      */
-    addCommand(commandWord, funct, aliases = [], info = Command.defaultMetadata, priority = 0){
-        let newCommand = new Command(commandWord,aliases, info, funct, priority)
+    addCommand(commandWord, funct, aliases = [], info = Command.defaultMetadata, priority = 0, cooldown = this.config.commandCooldown){
+        let newCommand = new Command(commandWord,aliases, info, funct, priority, cooldown)
         this.responses.add(newCommand);
         console.log(`Added command ${commandWord}`);
     }
@@ -243,7 +246,7 @@ Bot.defaultConfigOptions = {
     token: "",
     prefix: "!", 
     mentionAsPrefix: true, /** Prefixing the message with a ping to the bot will work the same as using the bot's prefix. */
-    commandTimeout: 0
+    commandCooldown: 2000
 };
 
 Bot.defaultInitCallbacks = {
