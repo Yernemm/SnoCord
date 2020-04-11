@@ -2,6 +2,7 @@
     "name": "Some Bot",
     "author": "Some User",
     "authorID": "000000000000000000",
+    "description": "A SnoCord bot",
     "token": "",
     "prefix": "!",
     "mentionAsPrefix": true,
