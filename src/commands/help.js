@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const util = require('./../utils.js');
 class HelpCommand
 {
     constructor()
@@ -39,10 +40,11 @@ class HelpCommand
             .setTitle(`${sno.bot.config.name} Help`)
             .setDescription(sno.bot.config.description);
 
-            console.log(JSON.stringify(cmds))
+           cmds = util.sortJson(cmds);
 
             for(const cat in cmds){
-                embed.addField(cat, `> ${cmds[cat].join(' ')}`);
+                cmds[cat].sort();
+                embed.addField(util.capitaliseFirstLetter(cat), `> \`\`\`${cmds[cat].join(' ')}\`\`\``);
             }
 
         } else {

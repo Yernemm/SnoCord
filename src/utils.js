@@ -72,10 +72,25 @@ function capitaliseFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+/**
+ * Sorts keys of object alphabetically
+ * @param {object} obj object to sort
+ * @returns sorted object
+ */
+function sortJson(obj){
+  let unordered = {...obj};
+  let ordered = {};
+  Object.keys(unordered).sort().forEach(function(key) {
+    ordered[key] = unordered[key];
+  });
+  return ordered;
+}
+
 module.exports = {
   mergeDefault,
   parseCommand,
   isCommand,
   isCommandSyntax,
-  capitaliseFirstLetter
+  capitaliseFirstLetter,
+  sortJson
 };
