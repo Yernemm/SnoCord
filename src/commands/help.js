@@ -64,6 +64,8 @@ class HelpCommand
                 .addField('Uasge', `> ${foundcmd.metadata.commandWord} ${foundcmd.metadata.usage}`);
                 if(foundcmd.metadata.aliases.length > 0)
                 embed.addField('Aliases', `> ${foundcmd.metadata.aliases.join(' ')}`);
+            }else{
+                embed.setTitle(`Command not found.`);
             }
 
 
