@@ -54,7 +54,7 @@ class Bot extends EventEmitter {
             //Never run responses to itself
             if (responses.length > 0 && message.author.id !== this.client.user.id) {
                 
-                let highestPriority = -99999;
+                let highestPriority = -Infinity;
 
                 responses.forEach(response => {
                     if (response.priority > highestPriority)
