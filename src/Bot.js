@@ -154,7 +154,6 @@ class Bot extends EventEmitter {
         let newCommand = new Command(commandWord,aliases, info, funct, priority)
         this.responses.add(newCommand);
         console.log(`Added command ${commandWord}`);
-        console.log(this.responses)
     }
 
     /**
