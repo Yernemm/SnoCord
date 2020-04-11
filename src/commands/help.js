@@ -17,7 +17,8 @@ class HelpCommand
         //sno contains { bot, message, command, args, argsText, respond }
 
         let embed = new Discord.MessageEmbed()
-        .setColor('#34eb8f')
+        .setColor('#34eb8f');
+        
 
         if(sno.args.length < 1){
 
@@ -29,17 +30,46 @@ class HelpCommand
                 if(cmd.isRunnableBy(sno.message.member)){
                     if(!cmds[cmd.metadata.category]) cmds[cmd.metadata.category] = [];
     
-                    cmds[cmd.metadata.category].push(cmd.commandWord);
+                    cmds[cmd.metadata.category].push(cmd.metadata.commandWord);
     
                 }
             });
 
+            embed
+            .setTitle(`${sno.bot.config.name} Help`)
+            .setDescription(sno.bot.config.description);
 
+            console.log(JSON.stringify(cmds))
+
+            for(const cat in cmds){
+                embed.addField(cat, `> ${cmds[cat].join(' ')}`);
+            }
 
         } else {
 
+            let foundcmd = null;
+
+            sno.bot.getAllCommands().forEach(cmd => {
+                if(cmd.isRunnableBy(sno.message.member)){
+
+                    if (cmd.metadata.commandWord === sno.args[0]) foundcmd = cmd;
+    
+                }
+            });
+
+            if(foundcmd !== null){
+                embed
+                .setTitle(`Help for ${foundcmd.metadata.commandWord}`)
+                .addField('Description', `> ${foundcmd.metadata.description}`)
+                .addField('Uasge', `> ${foundcmd.metadata.commandWord} ${foundcmd.metadata.usage}`);
+                if(foundcmd.metadata.aliases.length > 0)
+                embed.addField('Aliases', `> ${foundcmd.metadata.aliases.join(' ')}`);
+            }
+
 
         }
+
+        sno.respond("   ",{embed: embed});
 
 
 
