@@ -31,6 +31,15 @@ Default priority: 5</p>
 <dt><a href="#isCommand">isCommand(bot, message, prefixOverride, commandName)</a></dt>
 <dd><p>Checks if the message is a given command.</p>
 </dd>
+<dt><a href="#capitaliseFirstLetter">capitaliseFirstLetter(string)</a></dt>
+<dd><p>Capitalise first letter of text.</p>
+</dd>
+<dt><a href="#sortJson">sortJson(obj)</a> ⇒</dt>
+<dd><p>Sorts keys of object alphabetically</p>
+</dd>
+<dt><a href="#msToTime">msToTime(duration)</a> ⇒ <code>string</code></dt>
+<dd><p>convert ms to time string</p>
+</dd>
 </dl>
 
 <a name="Bot"></a>
@@ -49,11 +58,18 @@ Main class which everything starts from.
         * [.tryResponses(message)](#Bot+tryResponses) ⇒ [<code>Array.&lt;Response&gt;</code>](#Response)
         * [.addResponse(trigger, funct, priority)](#Bot+addResponse)
         * [.addCommand(commandWord, aliases, info, funct, priority)](#Bot+addCommand)
+        * [.addCommandClass(commandClass)](#Bot+addCommandClass)
         * [.addCommandHandler(path)](#Bot+addCommandHandler)
         * [.addCustomResponse(response)](#Bot+addCustomResponse)
+        * [.getAllCommands()](#Bot+getAllCommands) ⇒
+        * [.addHelpCommand()](#Bot+addHelpCommand)
+        * [.addPrefixCommands()](#Bot+addPrefixCommands)
+        * [.addCoreCommands()](#Bot+addCoreCommands)
+        * [.setCustomGuildPrefix(guildId, prefix)](#Bot+setCustomGuildPrefix) ⇒ <code>Promise</code>
+        * [.getPrefix(guildId)](#Bot+getPrefix) ⇒ <code>Promise</code>
     * _static_
         * [.defaultConfigOptions](#Bot.defaultConfigOptions)
-            * [.mentionAsPrefix](#Bot.defaultConfigOptions.mentionAsPrefix)
+            * [.commandCooldown](#Bot.defaultConfigOptions.commandCooldown)
 
 <a name="new_Bot_new"></a>
 
@@ -122,7 +138,7 @@ Adds Response object to the bot's set of responses.
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | trigger | <code>RegExp</code> \| <code>function</code> |  | The RegExp pattern to match to trigger this response OR Custom checking function which takes the message object and returns boolean. |
-| funct | <code>function</code> |  | Code to run when triggered. Will pass two parameters: The full discord message object to respond to, respond function which repsonds to the message. |
+| funct | <code>function</code> |  | Code to run when triggered. Will pass an object containing message (Discord#Message), respond function, messageOptions. |
 | priority | <code>integer</code> | <code>0</code> | (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0. |
 
 **Example**  
@@ -143,16 +159,34 @@ bot.addResponse(() => {return true;}, (r) => {
 | commandWord | <code>string</code> | The word which will execute the command. |
 | aliases | <code>Array.&lt;string&gt;</code> | Array of all command aliases. |
 | info | <code>object</code> | Info metadata object for command. |
-| funct | <code>function</code> | Code to run when triggered. Will pass two parameters: object containing parsed command data and message object, respond function which repsonds to the message. |
+| funct | <code>function</code> | Code to run when triggered. Will pass an object containing message (Discord#Message), respond function, messageOptions. |
 | priority | <code>integer</code> | (Optional) The priority value for the response. When two or more responses match, only those with the highest priority value will run. Defaults to 0. |
 
 **Example**  
 ```js
 bot.addCommand("help",(r)=>{r.respond(`I won't help you, ${r.message.author}`)})
 ```
+<a name="Bot+addCommandClass"></a>
+
+### bot.addCommandClass(commandClass)
+Add a command using a command class, similar to what the command handler does.
+
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| commandClass | [<code>Command</code>](#Command) | Class for this command |
+
+**Example**  
+```js
+bot.addCommandClass(require('./commands/SomeCommand.js'));
+bot.addCommandClass(SomeCommandClass);
+```
 <a name="Bot+addCommandHandler"></a>
 
 ### bot.addCommandHandler(path)
+Add a command handler to a specified directory.
+
 **Kind**: instance method of [<code>Bot</code>](#Bot)  
 
 | Param | Type | Description |
@@ -174,15 +208,65 @@ Add a custom response object to the list. (Not recommended for standard response
 | --- | --- | --- |
 | response | [<code>Response</code>](#Response) | Object of Response or class which extends response. |
 
+<a name="Bot+getAllCommands"></a>
+
+### bot.getAllCommands() ⇒
+Get all added commands.
+
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+**Returns**: array of Command instances.  
+<a name="Bot+addHelpCommand"></a>
+
+### bot.addHelpCommand()
+Adds the core help command to the commands.
+
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+<a name="Bot+addPrefixCommands"></a>
+
+### bot.addPrefixCommands()
+Adds the core 'prefix' and 'resetprefix' commands to the commands.
+
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+<a name="Bot+addCoreCommands"></a>
+
+### bot.addCoreCommands()
+Enables all of the built-in core commands.
+
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+<a name="Bot+setCustomGuildPrefix"></a>
+
+### bot.setCustomGuildPrefix(guildId, prefix) ⇒ <code>Promise</code>
+Set custom prefix for a specific guild.
+
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+**Returns**: <code>Promise</code> - if the setting is successful.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| guildId | <code>string</code> | ID of Discord guild. |
+| prefix | <code>string</code> | custom prefix for this guild or false for no custom prefix. |
+
+<a name="Bot+getPrefix"></a>
+
+### bot.getPrefix(guildId) ⇒ <code>Promise</code>
+Get the custom prefix if the guild has one, else return default prefix.
+
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+**Returns**: <code>Promise</code> - promise resolving to the guild's prefix.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| guildId | <code>string</code> | ID of the guild in which the command is run. |
+
 <a name="Bot.defaultConfigOptions"></a>
 
 ### Bot.defaultConfigOptions
 Default options to fall back on if the config object exists but doesn't have a given option.
 
 **Kind**: static property of [<code>Bot</code>](#Bot)  
-<a name="Bot.defaultConfigOptions.mentionAsPrefix"></a>
+<a name="Bot.defaultConfigOptions.commandCooldown"></a>
 
-#### defaultConfigOptions.mentionAsPrefix
+#### defaultConfigOptions.commandCooldown
 Prefixing the message with a ping to the bot will work the same as using the bot's prefix.
 
 **Kind**: static property of [<code>defaultConfigOptions</code>](#Bot.defaultConfigOptions)  
@@ -193,6 +277,12 @@ Child class of Response - Provides additional functionality for commands.
 Default priority: 5
 
 **Kind**: global class  
+
+* [Command](#Command)
+    * [.run(message)](#Command+run)
+    * [.isRunnableBy(member)](#Command+isRunnableBy)
+    * [.runCooldown(message, bot, cooldownStamp)](#Command+runCooldown)
+
 <a name="Command+run"></a>
 
 ### command.run(message)
@@ -203,6 +293,30 @@ Run the response code to a message.
 | Param | Type | Description |
 | --- | --- | --- |
 | message | <code>Discord#Message</code> | Message object to respond to. |
+
+<a name="Command+isRunnableBy"></a>
+
+### command.isRunnableBy(member)
+Check if the member has the required permissions to run this command.
+
+**Kind**: instance method of [<code>Command</code>](#Command)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| member | <code>Discord#GuildMember</code> | Guild member to check. |
+
+<a name="Command+runCooldown"></a>
+
+### command.runCooldown(message, bot, cooldownStamp)
+Send message if user on cooldown
+
+**Kind**: instance method of [<code>Command</code>](#Command)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>Discord#message</code> | message |
+| bot | [<code>Bot</code>](#Bot) | bot |
+| cooldownStamp | <code>number</code> | stamp of time after cooldown is over |
 
 <a name="Response"></a>
 
@@ -216,6 +330,7 @@ Generic class which handles responses to user messages.
     * [._respond(message, response, messageOptions)](#Response+_respond)
     * [.run(message)](#Response+run)
     * [.isTriggered(message)](#Response+isTriggered)
+    * [.runCooldown(message, bot, cooldownStamp)](#Response+runCooldown)
 
 <a name="new_Response_new"></a>
 
@@ -261,6 +376,19 @@ Checks whether the trigger pattern matches the message.
 | --- | --- | --- |
 | message | <code>Discord#Message</code> | The message object to check. |
 
+<a name="Response+runCooldown"></a>
+
+### response.runCooldown(message, bot, cooldownStamp)
+Do nothing if user on cooldown
+
+**Kind**: instance method of [<code>Response</code>](#Response)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>Discord#message</code> | message |
+| bot | [<code>Bot</code>](#Bot) | bot |
+| cooldownStamp | <code>number</code> | stamp of time after cooldown is over |
+
 <a name="parseCommand"></a>
 
 ## parseCommand(bot, message, prefixOverride)
@@ -300,6 +428,41 @@ Checks if the message is a given command.
 | message | <code>Discord#Message</code> | The message object to parse.message |
 | prefixOverride | <code>string</code> | Optional custom prefix. |
 | commandName | <code>string</code> | Name of command. |
+
+<a name="capitaliseFirstLetter"></a>
+
+## capitaliseFirstLetter(string)
+Capitalise first letter of text.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| string | <code>String</code> | text |
+
+<a name="sortJson"></a>
+
+## sortJson(obj) ⇒
+Sorts keys of object alphabetically
+
+**Kind**: global function  
+**Returns**: sorted object  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| obj | <code>object</code> | object to sort |
+
+<a name="msToTime"></a>
+
+## msToTime(duration) ⇒ <code>string</code>
+convert ms to time string
+
+**Kind**: global function  
+**Returns**: <code>string</code> - time  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| duration | <code>number</code> | time in ms |
 
 
 
