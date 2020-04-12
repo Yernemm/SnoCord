@@ -5,8 +5,9 @@ class ExampleCommand
         this.metadata = {
             commandWord: 'sample',
             aliases: [],
-            description: 'Adds num1 and num2 and pings you in return that many times.',
-            usage: 'num1 num2'
+            description: 'Adds num1 and num2 and pings you in return that many times. Requires ban permission for no reason!',
+            usage: 'num1 num2',
+            permissions: ['BAN_MEMBERS']
         };
     }
 

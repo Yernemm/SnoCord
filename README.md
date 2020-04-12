@@ -477,8 +477,9 @@ class ExampleCommand
         this.metadata = {
             commandWord: 'sample',
             aliases: [],
-            description: 'Adds num1 and num2 and pings you in return that many times.',
-            usage: 'num1 num2'
+            description: 'Adds num1 and num2 and pings you in return that many times. Requires ban permission for no reason!',
+            usage: 'num1 num2',
+            permissions: ['BAN_MEMBERS']
         };
     }
 
@@ -502,4 +503,18 @@ class ExampleCommand
     }
 }
 module.exports = ExampleCommand;
+```
+
+### Sample config file:
+```
+{
+    "name": "Some Bot",
+    "author": "Some User",
+    "authorID": "000000000000000000",
+    "description": "A SnoCord bot",
+    "token": "",
+    "prefix": "!",
+    "mentionAsPrefix": true,
+    "commandCooldown": 2000
+}
 ```
