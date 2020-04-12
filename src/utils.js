@@ -30,7 +30,7 @@ function parseCommand(bot, message, prefixOverride) {
 
     if (!prefixed && !mentioned) return null;
 
-    const prefix = prefixed ? bot.config.prefix : content.match(bot.mention)[0];
+    const prefix = prefixed ? (prefixOverride ? prefixOverride : bot.config.prefix) : content.match(bot.mention)[0];
 
     // Dissallow whitespace between the prefix and command name
     if (/^\s+/.test(content.slice(prefix.length))) return;

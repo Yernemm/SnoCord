@@ -1,10 +1,13 @@
 'use strict';
 const Discord = require('discord.js');
 const EventEmitter = require('events');
-const { mergeDefault } = require('./utils.js');
+const {
+    mergeDefault
+} = require('./utils.js');
 const Response = require("./Response.js");
 const Command = require("./Command.js");
 const fs = require('fs');
+const SnoDB = require('snodb');
 
 // A set containing all of Discord.js' events except `message`
 const events = Object.values(Discord.Constants.Events);
@@ -19,10 +22,15 @@ class Bot extends EventEmitter {
         const options = mergeDefault(opts, Bot.defaultOptions);
 
         //if (!options.config) throw new Error('No config object provided');
-        this.config = {...Bot.defaultConfigOptions, ...options.config };
+        this.config = {
+            ...Bot.defaultConfigOptions,
+            ...options.config
+        };
         this.client = new Discord.Client(options.client);
         this.responses = new Set();
         this.userCooldowns = {};
+        this._db = new SnoDB('./SnoCord.sqlite');
+        this.prefixCache = {}; //cache guild custom prefixes to speed things up.
 
     }
 
@@ -42,43 +50,54 @@ class Bot extends EventEmitter {
      * });
      */
     async init(callbacks) {
-        this.client.on('ready', ()=> console.log("SnoCord Ready"));
+        this.client.on('ready', () => console.log("SnoCord Ready"));
         this.client.on('message', (message) => {
-            //Set default prefix. Can be altered by server later.
-            message.snocord = {
-                config: this.config,
-                prefix: this.config.prefix
-            };
-            const responses = this.tryResponses(message,this);
+            this.getPrefix(message.guild.id)
+                .then(prefix => {
 
-            //Never run responses to itself
-            if (responses.length > 0 && message.author.id !== this.client.user.id) {
-                
-                let highestPriority = -Infinity;
+                    //Set default prefix. Can be altered by server later.
+                    message.snocord = {
+                        config: this.config,
+                        prefix: prefix
+                    };
 
-                responses.forEach(response => {
-                    if (response.priority > highestPriority)
-                        highestPriority = response.priority;
-                });
+                    const responses = this.tryResponses(message, this);
 
-                //Run each response.
-                //Emit each response with the response class type.
-                //e.g. Command will emit ('Command', response)
-                responses.forEach(response => {
-                    if (response.priority === highestPriority && (!this.userCooldowns[message.author.id] || this.userCooldowns[message.author.id] < Date.now())) {
-                        response.run(message, this);
-                        this.emit(response.constructor.name, response);
-                        this.userCooldowns[message.author.id] = Date.now() + response.cooldown;
-                    } else if(this.userCooldowns[message.author.id] >= Date.now()){
-                        response.runCooldown(message, this, this.userCooldowns[message.author.id]);
+                    //Never run responses to itself
+                    if (responses.length > 0 && message.author.id !== this.client.user.id) {
+
+                        let highestPriority = -Infinity;
+
+                        responses.forEach(response => {
+                            if (response.priority > highestPriority)
+                                highestPriority = response.priority;
+                        });
+
+                        //Run each response.
+                        //Emit each response with the response class type.
+                        //e.g. Command will emit ('Command', response)
+                        responses.forEach(response => {
+                            if (response.priority === highestPriority && (!this.userCooldowns[message.author.id] || this.userCooldowns[message.author.id] < Date.now())) {
+                                response.run(message, this);
+                                this.emit(response.constructor.name, response);
+                                this.userCooldowns[message.author.id] = Date.now() + response.cooldown;
+                            } else if (this.userCooldowns[message.author.id] >= Date.now()) {
+                                response.runCooldown(message, this, this.userCooldowns[message.author.id]);
+                            }
+                        });
+                    } else {
+                        this.emit('message', message);
                     }
-                });
-            } else {
-                this.emit('message', message);
-            }
+
+                })
+                .catch(err=>{console.error(err)});
+
         });
 
-        const { preInit, postInit } = mergeDefault(callbacks, Bot.defaultInitCallbacks);
+        const {
+            preInit,
+            postInit
+        } = mergeDefault(callbacks, Bot.defaultInitCallbacks);
 
         if (!this.config.token) throw new Error('No token provided');
 
@@ -86,7 +105,7 @@ class Bot extends EventEmitter {
 
         await this.client.login(this.config.token);
 
-        
+
 
         this.client.once('ready', async () => {
             if (postInit) await postInit.call(this);
@@ -109,9 +128,11 @@ class Bot extends EventEmitter {
      * Set the config object for the bot.
      * @param {object} config - Config object.
      */
-    setConfig(config)
-    {
-        this.config = {...this.config, ...config};
+    setConfig(config) {
+        this.config = {
+            ...this.config,
+            ...config
+        };
     }
 
     /**
@@ -119,10 +140,10 @@ class Bot extends EventEmitter {
      * @param {Message} message The message
      * @returns {Array<Response>} - Array of all matching responses.
      */
-    tryResponses(message,bot) {
+    tryResponses(message, bot) {
         let matching = [];
         for (let resp of this.responses) {
-            if (resp.isTriggered(message,bot)) matching.push(resp);
+            if (resp.isTriggered(message, bot)) matching.push(resp);
         }
         return matching;
     }
@@ -139,7 +160,7 @@ class Bot extends EventEmitter {
      *
      *  bot.addResponse(/^(hello bot)/i, (r) => r.respond("hi human"));
      */
-    addResponse(trigger, funct, priority = 0){
+    addResponse(trigger, funct, priority = 0) {
         this.responses.add(new Response(trigger, funct, priority));
     }
 
@@ -153,8 +174,8 @@ class Bot extends EventEmitter {
      * @example
      * bot.addCommand("help",(r)=>{r.respond(`I won't help you, ${r.message.author}`)})
      */
-    addCommand(commandWord, funct, aliases = [], info = Command.defaultMetadata, priority = 0, cooldown = this.config.commandCooldown){
-        let newCommand = new Command(commandWord,aliases, info, funct, priority, cooldown)
+    addCommand(commandWord, funct, aliases = [], info = Command.defaultMetadata, priority = 0, cooldown = this.config.commandCooldown) {
+        let newCommand = new Command(commandWord, aliases, info, funct, priority, cooldown)
         this.responses.add(newCommand);
         console.log(`Added command ${commandWord}`);
     }
@@ -166,7 +187,7 @@ class Bot extends EventEmitter {
      * bot.addCommandClass(require('./commands/SomeCommand.js'));
      * bot.addCommandClass(SomeCommandClass);
      */
-    addCommandClass(commandClass){
+    addCommandClass(commandClass) {
         let cmdObj = new commandClass();
         this.addCommand(
             cmdObj.metadata.commandWord,
@@ -174,7 +195,7 @@ class Bot extends EventEmitter {
             cmdObj.metadata.aliases,
             cmdObj.metadata,
             5
-            );
+        );
     }
 
     /**
@@ -183,29 +204,29 @@ class Bot extends EventEmitter {
      * @example
      * bot.addCommandHandler('./commands/');
      */
-    addCommandHandler(path){
+    addCommandHandler(path) {
         fs.readdir(path, (err, files) => {
             if (err) return console.error(err);
             files.forEach(file => {
-              if (!file.endsWith(".js")) return;
-              let cmdClass = require.main.require(`${path}${file}`);
-              let cmdObj = new cmdClass();
-              this.addCommand(
-                  cmdObj.metadata.commandWord,
-                  cmdObj.run,
-                  cmdObj.metadata.aliases,
-                  cmdObj.metadata,
-                  5
-                  );
+                if (!file.endsWith(".js")) return;
+                let cmdClass = require.main.require(`${path}${file}`);
+                let cmdObj = new cmdClass();
+                this.addCommand(
+                    cmdObj.metadata.commandWord,
+                    cmdObj.run,
+                    cmdObj.metadata.aliases,
+                    cmdObj.metadata,
+                    5
+                );
             });
-          });
+        });
     }
 
     /**
      * Add a custom response object to the list. (Not recommended for standard response types)
      * @param {Response} response - Object of Response or class which extends response.
      */
-    addCustomResponse(response){
+    addCustomResponse(response) {
         this.responses.add(response);
     }
 
@@ -213,22 +234,76 @@ class Bot extends EventEmitter {
      * Get all added commands.
      * @returns array of Command instances.
      */
-    getAllCommands(){
+    getAllCommands() {
         let cmds = []
         this.responses.forEach(res => {
-            if(res instanceof Command){
+            if (res instanceof Command) {
                 cmds.push(res);
-                
+
             }
         });
         return cmds;
     }
 
     /**
-     * Adds the pre-made help command to the commands.
+     * Adds the core help command to the commands.
      */
-    addHelpCommand(){
+    addHelpCommand() {
         this.addCommandClass(require("./commands/help.js"));
+    }
+
+    /**
+     * Adds the core 'prefix' and 'resetprefix' commands to the commands.
+     */
+    addPrefixCommands() {
+        this.addCommandClass(require("./commands/prefix.js"));
+        this.addCommandClass(require("./commands/resetprefix.js"));
+    }
+
+    /**
+     * Enables all of the built-in core commands.
+     */
+    addCoreCommands() {
+        this.addHelpCommand();
+        this.addPrefixCommands();
+    }
+
+    /**
+     * Set custom prefix for a specific guild.
+     * @param {string} guildId ID of Discord guild.
+     * @param {string} prefix custom prefix for this guild or false for no custom prefix.
+     * @returns {Promise} if the setting is successful.
+     */
+    setCustomGuildPrefix(guildId, prefix) {
+        return new Promise((resolve, reject) => {
+            this._db.setTo('CustomGuildPrefixes', guildId, prefix)
+                .then(data => {
+                    this.prefixCache[guildId] = prefix ? prefix : this.config.prefix;
+                    resolve(data);
+                })
+                .catch(err => reject(err));
+        });
+
+    }
+
+    /**
+     * Get the custom prefix if the guild has one, else return default prefix.
+     * @param {string} guildId ID of the guild in which the command is run.
+     * @returns {Promise} promise resolving to the guild's prefix.
+     */
+    getPrefix(guildId) {
+        return new Promise((resolve, reject) => {
+            if (this.prefixCache[guildId]) {
+                resolve(this.prefixCache[guildId]);
+            } else {
+                this._db.getFrom('CustomGuildPrefixes', guildId)
+                    .then(prefix => {
+                        this.prefixCache[guildId] = prefix;
+                        resolve(prefix);
+                    })
+                    .catch(err => reject(err));
+            }
+        });
     }
 }
 
@@ -238,14 +313,15 @@ Bot.defaultOptions = {
 };
 
 /** Default options to fall back on if the config object exists but doesn't have a given option. */
-Bot.defaultConfigOptions = {   
+Bot.defaultConfigOptions = {
     name: "Some Bot",
     author: "Some User",
     authorID: false,
     description: "A SnoCord bot",
     token: "",
-    prefix: "!", 
-    mentionAsPrefix: true, /** Prefixing the message with a ping to the bot will work the same as using the bot's prefix. */
+    prefix: "!",
+    mentionAsPrefix: true,
+    /** Prefixing the message with a ping to the bot will work the same as using the bot's prefix. */
     commandCooldown: 2000
 };
 

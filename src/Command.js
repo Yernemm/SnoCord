@@ -11,11 +11,11 @@ class Command extends Response {
     constructor(commandWord, aliases, metadata, funct, priority = 5, cooldown = 0) {
 
         super((message,bot)=>{
-            let check = utils.isCommand(bot,message,message.prefix,commandWord);
+            let check = utils.isCommand(bot,message,message.snocord.prefix,commandWord);
             if(!check){
                 aliases.forEach(e => {
                     //check aliases.
-                   check = (check || utils.isCommand(bot,message,message.prefix,e));
+                   check = (check || utils.isCommand(bot,message,message.snocord.prefix,e));
                 });
             }
             return check;
