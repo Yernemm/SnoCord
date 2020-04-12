@@ -54,7 +54,15 @@ class HelpCommand
             sno.bot.getAllCommands().forEach(cmd => {
                 if(cmd.isRunnableBy(sno.message.member)){
 
-                    if (cmd.metadata.commandWord === sno.args[0]) foundcmd = cmd;
+                    if (cmd.metadata.commandWord === sno.args[0]){
+                        foundcmd = cmd;
+                    } else if(cmd.metadata.aliases.length > 0){
+                        cmd.metadata.aliases.forEach(alias=>{
+                            if(alias === sno.args[0]){
+                                foundcmd = cmd;
+                            }
+                        });
+                    }
     
                 }
             });
