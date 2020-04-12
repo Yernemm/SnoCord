@@ -75,10 +75,10 @@ class HelpCommand
             if(foundcmd !== null){
                 embed
                 .setTitle(`Help for ${foundcmd.metadata.commandWord}`)
-                .addField('Description', `> ${foundcmd.metadata.description}`)
-                .addField('Uasge', `> ${prefix}${foundcmd.metadata.commandWord} ${foundcmd.metadata.usage}`);
+                .addField('Description', `>>> ${foundcmd.metadata.description}`)
+                .addField('Uasge', `>>> ${prefix}${foundcmd.metadata.commandWord} ${foundcmd.metadata.usage}`);
                 if(foundcmd.metadata.aliases.length > 0)
-                embed.addField('Aliases', `> ${foundcmd.metadata.aliases.join(' ')}`);
+                embed.addField('Aliases', `>>> ${foundcmd.metadata.aliases.join(' ')}`);
             }else{
                 embed.setTitle(`Command not found.`);
             }
