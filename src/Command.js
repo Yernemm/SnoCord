@@ -8,7 +8,7 @@ const utils = require('./utils.js');
  */
 class Command extends Response {
 
-    constructor(commandWord, aliases, metadata, funct, priority = 5, cooldown = 0) {
+    constructor(bot, commandWord, aliases, metadata, funct, priority = 5, cooldown = 0) {
 
         super((message,bot)=>{
             let check = utils.isCommand(bot,message,message.snocord.prefix,commandWord);
@@ -26,6 +26,7 @@ class Command extends Response {
         this.metadata.aliases = aliases;
         this.metadata.commandWord = commandWord;
         this.metadata.category = this.metadata.category ? this.metadata.category : "other";
+        this.config = bot.config;
 
     }
 
@@ -50,7 +51,9 @@ class Command extends Response {
      * @param {Discord#GuildMember} member Guild member to check.
      */
     isRunnableBy(member) {
-        if(this.metadata.permissions){
+        if(this.metadata.ownerOnly === true){
+            return member.id == this.config.ownerID;      
+        }else if(this.metadata.permissions){
             return member.hasPermission(this.metadata.permissions);
         }else{
             return true;

@@ -50,7 +50,13 @@ class Bot extends EventEmitter {
      * });
      */
     async init(callbacks) {
-        this.client.on('ready', () => console.log("SnoCord Ready"));
+        this.client.on('ready', () => {
+            console.log("[SC] SnoCord Ready");
+            if(this.presence){
+                this.client.user.setPresence(this.presence);
+                setInterval(()=>{this.client.user.setPresence(this.presence);}, 1000 * 60 * 60);
+            }
+        });
         this.client.on('message', (message) => {
             this.getPrefix(message.guild.id)
                 .then(prefix => {
@@ -175,9 +181,9 @@ class Bot extends EventEmitter {
      * bot.addCommand("help",(r)=>{r.respond(`I won't help you, ${r.message.author}`)})
      */
     addCommand(commandWord, funct, aliases = [], info = Command.defaultMetadata, priority = 0, cooldown = this.config.commandCooldown) {
-        let newCommand = new Command(commandWord, aliases, info, funct, priority, cooldown)
+        let newCommand = new Command(this, commandWord, aliases, info, funct, priority, cooldown)
         this.responses.add(newCommand);
-        console.log(`Added command ${commandWord}`);
+        console.log(`[SC] Added command ${commandWord}`);
     }
 
     /**
@@ -298,12 +304,21 @@ class Bot extends EventEmitter {
             } else {
                 this._db.getFrom('CustomGuildPrefixes', guildId)
                     .then(prefix => {
+                        prefix = prefix ? prefix : this.config.prefix;
                         this.prefixCache[guildId] = prefix;
                         resolve(prefix);
                     })
                     .catch(err => reject(err));
             }
         });
+    }
+
+    /**
+     * Set the bot's presence (status). Refereshed every hour.
+     * @param {Discord#PresenceData} presence Data for presence
+     */
+    setPresence(presence) {
+        this.presence = presence;
     }
 }
 
@@ -315,8 +330,8 @@ Bot.defaultOptions = {
 /** Default options to fall back on if the config object exists but doesn't have a given option. */
 Bot.defaultConfigOptions = {
     name: "Some Bot",
-    author: "Some User",
-    authorID: false,
+    owner: "Some User",
+    ownerID: false,
     description: "A SnoCord bot",
     token: "",
     prefix: "!",
