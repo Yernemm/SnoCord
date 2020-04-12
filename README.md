@@ -67,6 +67,7 @@ Main class which everything starts from.
         * [.addCoreCommands()](#Bot+addCoreCommands)
         * [.setCustomGuildPrefix(guildId, prefix)](#Bot+setCustomGuildPrefix) ⇒ <code>Promise</code>
         * [.getPrefix(guildId)](#Bot+getPrefix) ⇒ <code>Promise</code>
+        * [.setPresence(presence)](#Bot+setPresence)
     * _static_
         * [.defaultConfigOptions](#Bot.defaultConfigOptions)
             * [.commandCooldown](#Bot.defaultConfigOptions.commandCooldown)
@@ -257,6 +258,17 @@ Get the custom prefix if the guild has one, else return default prefix.
 | Param | Type | Description |
 | --- | --- | --- |
 | guildId | <code>string</code> | ID of the guild in which the command is run. |
+
+<a name="Bot+setPresence"></a>
+
+### bot.setPresence(presence)
+Set the bot's presence (status). Refereshed every hour.
+
+**Kind**: instance method of [<code>Bot</code>](#Bot)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| presence | <code>Discord#PresenceData</code> | Data for presence |
 
 <a name="Bot.defaultConfigOptions"></a>
 
@@ -466,6 +478,8 @@ convert ms to time string
 
 
 
+
+
 ## Examples
 
 ### Sample command using the command handler:
@@ -479,7 +493,8 @@ class ExampleCommand
             aliases: [],
             description: 'Adds num1 and num2 and pings you in return that many times. Requires ban permission for no reason!',
             usage: 'num1 num2',
-            permissions: ['BAN_MEMBERS']
+            permissions: ['BAN_MEMBERS'],
+            ownerOnly: false
         };
     }
 
@@ -509,8 +524,8 @@ module.exports = ExampleCommand;
 ```
 {
     "name": "Some Bot",
-    "author": "Some User",
-    "authorID": "000000000000000000",
+    "owner": "Some User",
+    "ownerID": "000000000000000000",
     "description": "A SnoCord bot",
     "token": "",
     "prefix": "!",
