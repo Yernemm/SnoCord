@@ -15,8 +15,13 @@ class HelpCommand
 
     run(sno)
     {
+        
         //sno contains { bot, message, command, args, argsText, respond }
 
+        sno.bot.getPrefix(sno.message.guild.id)
+        .then(prefix=>{
+
+            
         let embed = new Discord.MessageEmbed()
         .setColor('#34eb8f');
         
@@ -38,7 +43,7 @@ class HelpCommand
 
             embed
             .setTitle(`${sno.bot.config.name} Help`)
-            .setDescription(sno.bot.config.description);
+            .setDescription(`Current prefix: ${prefix}\n\n`+sno.bot.config.description);
 
            cmds = util.sortJson(cmds);
 
@@ -71,7 +76,7 @@ class HelpCommand
                 embed
                 .setTitle(`Help for ${foundcmd.metadata.commandWord}`)
                 .addField('Description', `> ${foundcmd.metadata.description}`)
-                .addField('Uasge', `> ${foundcmd.metadata.commandWord} ${foundcmd.metadata.usage}`);
+                .addField('Uasge', `> ${prefix}${foundcmd.metadata.commandWord} ${foundcmd.metadata.usage}`);
                 if(foundcmd.metadata.aliases.length > 0)
                 embed.addField('Aliases', `> ${foundcmd.metadata.aliases.join(' ')}`);
             }else{
@@ -84,7 +89,7 @@ class HelpCommand
         sno.respond("   ",{embed: embed});
 
 
-
+        });
 
     }
 }
