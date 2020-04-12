@@ -1,7 +1,7 @@
 {
     "name": "Some Bot",
-    "author": "Some User",
-    "authorID": "000000000000000000",
+    "owner": "Some User",
+    "ownerID": "000000000000000000",
     "description": "A SnoCord bot",
     "token": "",
     "prefix": "!",
