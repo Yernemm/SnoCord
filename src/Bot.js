@@ -178,7 +178,7 @@ class Bot extends EventEmitter {
     }
 
     /**
-     * 
+     * Add a command handler to a specified directory.
      * @param {string} path - The local path to the directory containing only command class files.
      * @example
      * bot.addCommandHandler('./commands/');
