@@ -87,7 +87,7 @@ class Bot extends EventEmitter {
                                 response.run(message, this);
                                 this.emit(response.constructor.name, response);
                                 this.userCooldowns[message.author.id] = Date.now() + response.cooldown;
-                            } else if (this.userCooldowns[message.author.id] >= Date.now()) {
+                            } else if (response.priority === highestPriority && this.userCooldowns[message.author.id] >= Date.now()) {
                                 response.runCooldown(message, this, this.userCooldowns[message.author.id]);
                             }
                         });

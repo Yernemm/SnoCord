@@ -68,7 +68,11 @@ class Command extends Response {
      */
     runCooldown(message, bot, cooldownStamp)
     {
-        message.reply(`Please wait **${utils.msToTime(cooldownStamp - Date.now())}** before using another command.`);
+        message.reply(`Please wait **${utils.msToTime(cooldownStamp - Date.now())}** before using another command.`)
+        .then((message)=>{
+            message.delete({timeout: 5000})
+            .then(()=>{}).catch(()=>{});
+        });
     }
 
 
