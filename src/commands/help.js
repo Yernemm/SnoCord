@@ -15,16 +15,16 @@ class HelpCommand
 
     run(sno)
     {
-        
+
         //sno contains { bot, message, command, args, argsText, respond }
 
         sno.bot.getPrefix(sno.message.guild.id)
         .then(prefix=>{
 
-            
+
         let embed = new Discord.MessageEmbed()
         .setColor('#34eb8f');
-        
+
 
         if(sno.args.length < 1){
 
@@ -35,9 +35,9 @@ class HelpCommand
             sno.bot.getAllCommands().forEach(cmd => {
                 if(cmd.isRunnableBy(sno.message.member)){
                     if(!cmds[cmd.metadata.category]) cmds[cmd.metadata.category] = [];
-    
+
                     cmds[cmd.metadata.category].push(cmd.metadata.commandWord);
-    
+
                 }
             });
 
@@ -68,7 +68,7 @@ class HelpCommand
                             }
                         });
                     }
-    
+
                 }
             });
 
@@ -76,7 +76,7 @@ class HelpCommand
                 embed
                 .setTitle(`Help for ${foundcmd.metadata.commandWord}`)
                 .addField('Description', `>>> ${foundcmd.metadata.description}`)
-                .addField('Uasge', `>>> ${prefix}${foundcmd.metadata.commandWord} ${foundcmd.metadata.usage}`);
+                .addField('Usage', `>>> ${prefix}${foundcmd.metadata.commandWord} ${foundcmd.metadata.usage}`);
                 if(foundcmd.metadata.aliases.length > 0)
                 embed.addField('Aliases', `>>> ${foundcmd.metadata.aliases.join(' ')}`);
             }else{
