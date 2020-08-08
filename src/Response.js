@@ -62,16 +62,15 @@ class Response {
               resolve(this.trigger(message,bot));
               break;
 
-            case 'object':
-              if(this.trigger.promise !== undefined){
-                this.trigger.promise(message,bot)
-                .then(res => resolve(res))
-                .catch(err => reject(err))
-              }
-              break;
-
             default:
+            if(this.trigger.promise !== undefined){
+              this.trigger.promise(message,bot)
+              .then(res => resolve(res))
+              .catch(err => reject(err))
+            }else{
               resolve(this.trigger.test(message.content));
+            }
+
 
           }
 
