@@ -19,7 +19,7 @@ class Response {
     }
 
     /**
-     * 
+     *
      * @param {Discord#Message} message - Message object to respond to.
      * @param {string} response - String text to send in response.
      * @param {Discord#MessageOptions} messageOptions - Options provided when sending or editing a message.
@@ -30,7 +30,7 @@ class Response {
         if(response.length <= 0 && messageOptions === {})
             return; //Cannot send empty message.
 
-        if(response.length > 2000){ 
+        if(response.length > 2000){
             response = response.substring(0, 1997) + '...';
         }
         message.channel.send(response, messageOptions);
@@ -54,7 +54,28 @@ class Response {
      */
     isTriggered(message,bot)
     {
-        return typeof this.trigger === 'function' ? this.trigger(message,bot) : this.trigger.test(message.content);
+        return new promise((resolve, reject)=>{
+
+          switch (typeof this.trigger) {
+
+            case 'function':
+              resolve(this.trigger(message,bot));
+              break;
+
+            case 'object':
+              if(this.trigger.promise !== undefined){
+                this.trigger.promise(message,bot)
+                .then(res => resolve(res))
+                .catch(err => reject(err))
+              }
+              break;
+
+            default:
+              resolve(this.trigger.test(message.content));
+
+          }
+
+        });
     }
 
     /**
