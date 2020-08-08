@@ -152,22 +152,7 @@ class Bot extends EventEmitter {
         };
     }
 
-    /**
-     * Loops through each response, attempting to find one that will trigger on the given message.
-     * @param {Message} message The message
-     * @returns {Array<Response>} - Array of all matching responses.
-     */
-    tryResponses(message, bot) {
-          return new Promise((resolve, reject)=>{
-          let all = [];
-          this.responses.forEach((i)=>{all.push(i)});
 
-          _tryResponsesCallback([], all, message, bot, (res)=>{
-              resolve(matching);
-          })
-
-        })
-    }
 
     _tryResponsesCallback(matching, all, message, bot, callback) {
       all[0].isTriggered(message,bot).then(res=>{
@@ -181,10 +166,31 @@ class Bot extends EventEmitter {
         if(all.length === 0){
           callback(matching)
         }else{
-          _tryResponsesCallback(matching, all, message, bot, callback)
+          this._tryResponsesCallback(matching, all, message, bot, callback)
         }
       });
     }
+
+
+
+    /**
+     * Loops through each response, attempting to find one that will trigger on the given message.
+     * @param {Message} message The message
+     * @returns {Array<Response>} - Array of all matching responses.
+     */
+    tryResponses(message, bot) {
+          return new Promise((resolve, reject)=>{
+          let all = [];
+          this.responses.forEach((i)=>{all.push(i)});
+
+          this._tryResponsesCallback([], all, message, bot, (res)=>{
+              resolve(res);
+          })
+
+        })
+    }
+
+
 
     /**
      * Adds Response object to the bot's set of responses.
