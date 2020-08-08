@@ -67,33 +67,44 @@ class Bot extends EventEmitter {
                         prefix: prefix
                     };
 
-                    const responses = this.tryResponses(message, this);
+                    this.tryResponses(message, this)
+                    .then(responses=>{
 
-                    //Never run responses to itself
-                    if (responses.length > 0 && message.author.id !== this.client.user.id) {
 
-                        let highestPriority = -Infinity;
 
-                        responses.forEach(response => {
-                            if (response.priority > highestPriority)
-                                highestPriority = response.priority;
-                        });
+                                          //Never run responses to itself
+                                          if (responses.length > 0 && message.author.id !== this.client.user.id) {
 
-                        //Run each response.
-                        //Emit each response with the response class type.
-                        //e.g. Command will emit ('Command', response)
-                        responses.forEach(response => {
-                            if (response.priority === highestPriority && (!this.userCooldowns[message.author.id] || this.userCooldowns[message.author.id] < Date.now())) {
-                                response.run(message, this);
-                                this.emit(response.constructor.name, response);
-                                this.userCooldowns[message.author.id] = Date.now() + response.cooldown;
-                            } else if (response.priority === highestPriority && this.userCooldowns[message.author.id] >= Date.now()) {
-                                response.runCooldown(message, this, this.userCooldowns[message.author.id]);
-                            }
-                        });
-                    } else {
-                        this.emit('message', message);
-                    }
+                                              let highestPriority = -Infinity;
+
+                                              responses.forEach(response => {
+                                                  if (response.priority > highestPriority)
+                                                      highestPriority = response.priority;
+                                              });
+
+                                              //Run each response.
+                                              //Emit each response with the response class type.
+                                              //e.g. Command will emit ('Command', response)
+                                              responses.forEach(response => {
+                                                  if (response.priority === highestPriority && (!this.userCooldowns[message.author.id] || this.userCooldowns[message.author.id] < Date.now())) {
+                                                      response.run(message, this);
+                                                      this.emit(response.constructor.name, response);
+                                                      this.userCooldowns[message.author.id] = Date.now() + response.cooldown;
+                                                  } else if (response.priority === highestPriority && this.userCooldowns[message.author.id] >= Date.now()) {
+                                                      response.runCooldown(message, this, this.userCooldowns[message.author.id]);
+                                                  }
+                                              });
+                                          } else {
+                                              this.emit('message', message);
+                                          }
+
+
+
+
+                    })
+                    .catch()
+
+
 
                 })
                 .catch(err=>{console.error(err)});
@@ -147,16 +158,32 @@ class Bot extends EventEmitter {
      * @returns {Array<Response>} - Array of all matching responses.
      */
     tryResponses(message, bot) {
-        let matching = [];
-        for (let resp of this.responses) {
-          resp.isTriggered(message, bot)
-          .then(res => {
-            if(res) matching.push(resp);
-          })
-          .catch(()=>{});
+          return new Promise((resolve, reject)=>{
+          let all = [];
+          this.responses.forEach((i)=>{all.push(i)});
 
+          _tryResponsesCallback([], all, message, bot, (res)=>{
+              resolve(matching);
+          })
+
+        })
+    }
+
+    _tryResponsesCallback(matching, all, message, bot, callback) {
+      all[0].isTriggered(message,bot).then(res=>{
+        if(res){
+          matching.push(all[0])
         }
-        return matching;
+      })
+      .catch(()=>{})
+      .finally(()=>{
+        all.shift();
+        if(all.length === 0){
+          callback(matching)
+        }else{
+          _tryResponsesCallback(matching, all, message, bot, callback)
+        }
+      });
     }
 
     /**
