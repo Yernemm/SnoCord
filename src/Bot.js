@@ -149,7 +149,12 @@ class Bot extends EventEmitter {
     tryResponses(message, bot) {
         let matching = [];
         for (let resp of this.responses) {
-            if (resp.isTriggered(message, bot)) matching.push(resp);
+          resp.isTriggered(message, bot)
+          .then(res = > {
+            if(res) matching.push(resp);
+          })
+          .catch(()=>{});
+
         }
         return matching;
     }
@@ -171,7 +176,7 @@ class Bot extends EventEmitter {
     }
 
     /**
-     * 
+     *
      * @param {string} commandWord - The word which will execute the command.
      * @param {Array<string>} aliases - Array of all command aliases.
      * @param {object} info - Info metadata object for command.

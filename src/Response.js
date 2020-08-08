@@ -54,7 +54,7 @@ class Response {
      */
     isTriggered(message,bot)
     {
-        return new promise((resolve, reject)=>{
+        return new Promise((resolve, reject)=>{
 
           switch (typeof this.trigger) {
 
