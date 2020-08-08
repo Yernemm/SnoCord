@@ -54,7 +54,7 @@ class Response {
      */
     isTriggered(message,bot)
     {
-        return new Promise((resolve, reject)=>{
+        return new promise((resolve, reject)=>{
 
           switch (typeof this.trigger) {
 
@@ -62,15 +62,19 @@ class Response {
               resolve(this.trigger(message,bot));
               break;
 
-            default:
-            if(this.trigger.promise !== undefined){
-              this.trigger.promise(message,bot)
-              .then(res => resolve(res))
-              .catch(err => reject(err))
-            }else{
-              resolve(this.trigger.test(message.content));
-            }
+            case 'object':
+              if(this.trigger.promise !== undefined){
+                this.trigger.promise(message,bot)
+                .then(res => resolve(res))
+                .catch(err => reject(err))
+              }else{
+                reject();
+              }
+              break;
 
+            default:
+              if(this.trigger.promise !== undefine)
+              resolve(this.trigger.test(message.content));
 
           }
 
