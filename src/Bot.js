@@ -150,7 +150,7 @@ class Bot extends EventEmitter {
         let matching = [];
         for (let resp of this.responses) {
           resp.isTriggered(message, bot)
-          .then(res = > {
+          .then(res => {
             if(res) matching.push(resp);
           })
           .catch(()=>{});
